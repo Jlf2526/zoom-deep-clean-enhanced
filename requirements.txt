@@ -1,0 +1,14 @@
+# Zoom Deep Clean Enhanced - Requirements
+# VM-Aware & System-Wide cleanup utility
+# Created by: PHLthy215
+# Enhanced Version: 2.2.0
+
+# Core requirements (minimal for maximum compatibility)
+# No external dependencies required - uses only Python standard library
+
+# Optional development dependencies (install with pip install -e ".[dev]")
+# pytest>=6.0
+# pytest-cov>=2.0
+# black>=21.0
+# flake8>=3.8
+# mypy>=0.800
