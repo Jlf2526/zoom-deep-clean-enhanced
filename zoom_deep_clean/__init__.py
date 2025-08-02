@@ -13,7 +13,6 @@ This package provides comprehensive Zoom cleanup functionality with:
 """
 
 from .cleaner_enhanced import ZoomDeepCleanerEnhanced, SecurityError
-from .cli_enhanced import main
 
 __version__ = "2.2.0"
 __author__ = "PHLthy215"
@@ -23,9 +22,14 @@ __description__ = "Enhanced VM-Aware & System-Wide Zoom cleanup utility for macO
 __all__ = [
     "ZoomDeepCleanerEnhanced",
     "SecurityError", 
-    "main",
     "__version__",
     "__author__",
     "__email__",
     "__description__"
 ]
+
+# CLI main function available via lazy import to avoid warnings
+def main():
+    """Entry point for CLI - lazy import to avoid module loading issues"""
+    from .cli_enhanced import main as cli_main
+    return cli_main()

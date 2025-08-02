@@ -8,7 +8,6 @@ Version: 2.3.0 - Performance Monitoring
 """
 
 import time
-import psutil
 import threading
 import json
 import os
@@ -17,6 +16,14 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass, asdict
 from contextlib import contextmanager
 import logging
+
+# Optional psutil import for performance monitoring
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    psutil = None
+    PSUTIL_AVAILABLE = False
 
 @dataclass
 class PerformanceMetrics:
@@ -39,10 +46,16 @@ class PerformanceMonitor:
     
     def __init__(self, logger: logging.Logger, enable_detailed_monitoring: bool = True):
         self.logger = logger
-        self.enable_detailed_monitoring = enable_detailed_monitoring
+        self.enable_detailed_monitoring = enable_detailed_monitoring and PSUTIL_AVAILABLE
         self.metrics: List[PerformanceMetrics] = []
         self.active_operations: Dict[str, Dict[str, Any]] = {}
-        self.system_baseline = self._establish_baseline()
+        
+        if not PSUTIL_AVAILABLE:
+            self.logger.warning("psutil not available - performance monitoring will be limited")
+            self.system_baseline = {}
+        else:
+            self.system_baseline = self._establish_baseline()
+            
         self.monitoring_thread: Optional[threading.Thread] = None
         self.monitoring_active = False
         
@@ -105,10 +118,25 @@ class PerformanceMonitor:
         try:
             metrics = {
                 'timestamp': time.time(),
+            }
+            
+            if not PSUTIL_AVAILABLE:
+                # Return minimal metrics when psutil is not available
+                metrics.update({
+                    'cpu_percent': 0,
+                    'memory_percent': 0,
+                    'memory_available': 0,
+                    'disk_io': {},
+                    'network_io': {}
+                })
+                return metrics
+            
+            # Full metrics when psutil is available
+            metrics.update({
                 'cpu_percent': psutil.cpu_percent(),
                 'memory_percent': psutil.virtual_memory().percent,
                 'memory_available': psutil.virtual_memory().available,
-            }
+            })
             
             if self.enable_detailed_monitoring:
                 # Detailed disk I/O metrics

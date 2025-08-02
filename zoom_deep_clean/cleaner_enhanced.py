@@ -103,7 +103,7 @@ class ZoomDeepCleanerEnhanced:
             self._setup_backup_dir()
     
     def _validate_path(self, path: str) -> str:
-        """Validate and sanitize file paths"""
+        """Enhanced path validation with security integration"""
         if not isinstance(path, str):
             raise SecurityError(f"Path must be string, got {type(path)}")
         
@@ -117,6 +117,23 @@ class ZoomDeepCleanerEnhanced:
         resolved = os.path.abspath(os.path.expanduser(path))
         if '..' in path or not resolved.startswith(('/', os.path.expanduser('~'))):
             raise SecurityError(f"Suspicious path detected: {path}")
+        
+        # Enhanced security validation - check for dangerous system paths
+        dangerous_paths = [
+            '/System/',
+            '/usr/bin/',
+            '/usr/sbin/',
+            '/bin/',
+            '/sbin/',
+            '/etc/passwd',
+            '/etc/hosts',
+            '/Library/CoreServices/',
+            '/Applications/Utilities/',
+        ]
+        
+        for dangerous in dangerous_paths:
+            if resolved.startswith(dangerous):
+                raise SecurityError(f"Access to critical system path denied: {resolved}")
         
         return resolved
     
