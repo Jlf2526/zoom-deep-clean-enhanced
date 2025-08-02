@@ -22,9 +22,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from zoom_deep_clean.cleaner_enhanced import ZoomDeepCleanerEnhanced
 from zoom_deep_clean.advanced_features import AdvancedFeatures
-from security_enhancements import SecurityValidator, FileIntegrityChecker
-from advanced_detection import SystemFingerprintAnalyzer, ZoomArtifactDetector
-from cross_platform_support import CrossPlatformZoomCleaner, PlatformDetector
+from zoom_deep_clean.security_enhancements import SecurityValidator, FileIntegrityChecker
+from zoom_deep_clean.advanced_detection import SystemFingerprintAnalyzer, ZoomArtifactDetector
+from zoom_deep_clean.cross_platform_support import CrossPlatformZoomCleaner, PlatformDetector
 
 class TestSecurityValidation(unittest.TestCase):
     """Test security validation features"""

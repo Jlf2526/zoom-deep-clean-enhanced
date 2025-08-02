@@ -12,10 +12,15 @@ import sys
 import platform
 import subprocess
 import shutil
-import winreg
 from typing import List, Dict, Tuple, Optional, Any
 from pathlib import Path
 import logging
+
+# Conditional Windows import
+try:
+    import winreg
+except ImportError:
+    winreg = None  # Not available on non-Windows platforms
 
 class PlatformDetector:
     """Detect and validate platform capabilities"""
@@ -123,6 +128,9 @@ class WindowsZoomCleaner:
         
         if platform.system() != 'Windows':
             raise RuntimeError("WindowsZoomCleaner can only run on Windows")
+        
+        if winreg is None:
+            raise RuntimeError("winreg module not available - required for Windows registry operations")
     
     def clean_windows_zoom(self) -> Dict[str, Any]:
         """Perform Windows-specific Zoom cleanup"""
