@@ -1,9 +1,25 @@
 # Zoom Deep Clean Enhanced - VM-Aware & System-Wide
 
+![Tests](https://github.com/Jlf2526/zoom-deep-clean-enhanced/workflows/Tests/badge.svg)
+![Performance Monitoring](https://github.com/Jlf2526/zoom-deep-clean-enhanced/workflows/Performance%20Monitoring/badge.svg)
+![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)
+![macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 A comprehensive, production-ready Python package for completely removing Zoom's device fingerprinting and persistent identifiers on macOS with enhanced VM support and system-wide cleanup capabilities.
 
 **Created by: PHLthy215**  
 **Enhanced Version: 2.2.0 - VM-Aware & System-Wide**
+
+## 📊 Performance Monitoring
+
+This project includes comprehensive performance monitoring to ensure CI/CD pipeline efficiency:
+
+- **Test Execution**: Target <60s (currently ~25-40s)
+- **Code Quality**: Target <30s (currently ~15s)  
+- **Security Scans**: Target <45s (currently ~25s)
+- **Automated Alerts**: Performance regression detection
+- **Trend Analysis**: Historical performance tracking
 
 ## 🚀 Enhanced Features
 

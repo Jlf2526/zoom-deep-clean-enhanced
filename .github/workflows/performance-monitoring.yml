@@ -1,0 +1,225 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 2 AM UTC to track performance trends
+    - cron: '0 2 * * *'
+
+env:
+  # Performance thresholds (in seconds)
+  MAX_TEST_TIME: 60
+  MAX_LINT_TIME: 30
+  MAX_SECURITY_TIME: 45
+  PERFORMANCE_ALERT_THRESHOLD: 80  # Alert if >80% of threshold
+
+jobs:
+  performance-baseline:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/test-requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies with timing
+      run: |
+        START_TIME=$(date +%s)
+        python -m pip install --upgrade pip
+        pip install -r test-requirements.txt
+        pip install psutil
+        END_TIME=$(date +%s)
+        INSTALL_DURATION=$((END_TIME - START_TIME))
+        echo "=== Dependency Installation: ${INSTALL_DURATION}s ==="
+        echo "install_duration=${INSTALL_DURATION}" >> $GITHUB_OUTPUT
+      id: install_timing
+    
+    - name: Run tests with detailed timing
+      run: |
+        echo "=== Starting Test Execution ==="
+        START_TIME=$(date +%s)
+        
+        # Run tests with detailed timing per test
+        python -m pytest tests/ -v \
+          --cov=zoom_deep_clean \
+          --cov-report=xml \
+          --cov-report=term-missing \
+          --durations=10 \
+          --tb=short
+        
+        END_TIME=$(date +%s)
+        DURATION=$((END_TIME - START_TIME))
+        echo "=== Test Execution Time: ${DURATION}s ==="
+        
+        # Calculate performance metrics
+        THRESHOLD_PERCENT=$((DURATION * 100 / MAX_TEST_TIME))
+        
+        # Performance status
+        if [ $DURATION -gt $MAX_TEST_TIME ]; then
+          echo "❌ PERFORMANCE REGRESSION: ${DURATION}s > ${MAX_TEST_TIME}s (${THRESHOLD_PERCENT}%)"
+          echo "::error::Test execution exceeded threshold: ${DURATION}s > ${MAX_TEST_TIME}s"
+          echo "performance_status=FAILED" >> $GITHUB_OUTPUT
+        elif [ $THRESHOLD_PERCENT -gt $PERFORMANCE_ALERT_THRESHOLD ]; then
+          echo "⚠️ PERFORMANCE WARNING: ${DURATION}s (${THRESHOLD_PERCENT}% of threshold)"
+          echo "::warning::Test execution approaching threshold: ${DURATION}s (${THRESHOLD_PERCENT}%)"
+          echo "performance_status=WARNING" >> $GITHUB_OUTPUT
+        else
+          echo "✅ Performance OK: ${DURATION}s (${THRESHOLD_PERCENT}% of threshold)"
+          echo "performance_status=OK" >> $GITHUB_OUTPUT
+        fi
+        
+        # Store metrics
+        echo "test_duration=${DURATION}" >> $GITHUB_OUTPUT
+        echo "threshold_percent=${THRESHOLD_PERCENT}" >> $GITHUB_OUTPUT
+        echo "python_version=${{ matrix.python-version }}" >> $GITHUB_OUTPUT
+      id: test_timing
+    
+    - name: Lint performance check
+      run: |
+        START_TIME=$(date +%s)
+        
+        # Install linting tools
+        pip install flake8 black
+        
+        # Run flake8
+        flake8 zoom_deep_clean --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 zoom_deep_clean --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        
+        # Run black
+        black --check --diff zoom_deep_clean/ || true
+        
+        END_TIME=$(date +%s)
+        DURATION=$((END_TIME - START_TIME))
+        THRESHOLD_PERCENT=$((DURATION * 100 / MAX_LINT_TIME))
+        
+        echo "=== Lint Duration: ${DURATION}s (${THRESHOLD_PERCENT}% of threshold) ==="
+        
+        if [ $DURATION -gt $MAX_LINT_TIME ]; then
+          echo "❌ LINT PERFORMANCE REGRESSION: ${DURATION}s > ${MAX_LINT_TIME}s"
+          echo "::warning::Lint execution exceeded threshold"
+        fi
+        
+        echo "lint_duration=${DURATION}" >> $GITHUB_OUTPUT
+        echo "lint_threshold_percent=${THRESHOLD_PERCENT}" >> $GITHUB_OUTPUT
+      id: lint_timing
+    
+    - name: Security scan performance check
+      run: |
+        START_TIME=$(date +%s)
+        
+        # Install security tools
+        pip install bandit safety
+        
+        # Run security scans
+        bandit -r zoom_deep_clean/ -f json -o bandit-report.json || true
+        bandit -r zoom_deep_clean/ || true
+        safety check || true
+        
+        END_TIME=$(date +%s)
+        DURATION=$((END_TIME - START_TIME))
+        THRESHOLD_PERCENT=$((DURATION * 100 / MAX_SECURITY_TIME))
+        
+        echo "=== Security Scan Duration: ${DURATION}s (${THRESHOLD_PERCENT}% of threshold) ==="
+        
+        if [ $DURATION -gt $MAX_SECURITY_TIME ]; then
+          echo "❌ SECURITY SCAN PERFORMANCE REGRESSION: ${DURATION}s > ${MAX_SECURITY_TIME}s"
+          echo "::warning::Security scan exceeded threshold"
+        fi
+        
+        echo "security_duration=${DURATION}" >> $GITHUB_OUTPUT
+        echo "security_threshold_percent=${THRESHOLD_PERCENT}" >> $GITHUB_OUTPUT
+      id: security_timing
+    
+    - name: Generate performance report
+      run: |
+        echo "=== Performance Report ==="
+        echo "Date: $(date)"
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Python: ${{ matrix.python-version }}"
+        echo ""
+        echo "Timings:"
+        echo "- Install: ${{ steps.install_timing.outputs.install_duration }}s"
+        echo "- Tests: ${{ steps.test_timing.outputs.test_duration }}s (${{ steps.test_timing.outputs.threshold_percent }}%)"
+        echo "- Lint: ${{ steps.lint_timing.outputs.lint_duration }}s (${{ steps.lint_timing.outputs.lint_threshold_percent }}%)"
+        echo "- Security: ${{ steps.security_timing.outputs.security_duration }}s (${{ steps.security_timing.outputs.security_threshold_percent }}%)"
+        echo ""
+        echo "Status: ${{ steps.test_timing.outputs.performance_status }}"
+        echo ""
+        echo "Thresholds:"
+        echo "- Max Test Time: ${MAX_TEST_TIME}s"
+        echo "- Max Lint Time: ${MAX_LINT_TIME}s"
+        echo "- Max Security Time: ${MAX_SECURITY_TIME}s"
+        echo "- Alert Threshold: ${PERFORMANCE_ALERT_THRESHOLD}%"
+    
+    - name: Store performance metrics
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-metrics-py${{ matrix.python-version }}
+        path: |
+          coverage.xml
+          bandit-report.json
+        retention-days: 30
+
+  performance-summary:
+    runs-on: ubuntu-latest
+    needs: performance-baseline
+    if: always()
+    
+    steps:
+    - name: Performance trend analysis
+      run: |
+        echo "=== Performance Trend Analysis ==="
+        echo "This job would analyze performance trends over time"
+        echo "Future enhancements:"
+        echo "- Store metrics in database/file"
+        echo "- Generate trend charts"
+        echo "- Alert on sustained performance degradation"
+        echo "- Compare against historical baselines"
+        echo ""
+        echo "Current Status: ${{ needs.performance-baseline.result }}"
+        
+        # Future: Add logic to store metrics and generate alerts
+        if [ "${{ needs.performance-baseline.result }}" != "success" ]; then
+          echo "::warning::Performance monitoring detected issues"
+        fi
+
+  performance-alert:
+    runs-on: ubuntu-latest
+    needs: performance-baseline
+    if: failure()
+    
+    steps:
+    - name: Send performance alert
+      run: |
+        echo "=== Performance Alert ==="
+        echo "Performance thresholds exceeded!"
+        echo "Commit: ${{ github.sha }}"
+        echo "Branch: ${{ github.ref_name }}"
+        echo "Time: $(date)"
+        echo ""
+        echo "Action required:"
+        echo "1. Review recent changes for performance impact"
+        echo "2. Profile slow tests/operations"
+        echo "3. Consider optimizations or threshold adjustments"
+        echo ""
+        echo "::error::Performance regression detected - investigate immediately"
