@@ -73,3 +73,6 @@ temp/
 
 # Performance monitoring exports
 performance_*.json
+venv/
+.pytest_cache/
+htmlcov/

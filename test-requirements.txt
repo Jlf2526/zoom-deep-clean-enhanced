@@ -1,14 +1,3 @@
-# Core testing requirements
-coverage==7.10.1
 pytest==8.4.1
 pytest-cov==6.2.1
 pytest-mock==3.14.1
-
-# Optional performance monitoring (will be installed in CI)
-# psutil>=5.8.0
-
-# Code quality tools (for CI)
-flake8>=6.0.0
-black>=23.0.0
-bandit>=1.7.0
-safety>=2.0.0
