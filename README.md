@@ -1,6 +1,6 @@
 # Zoom Deep Clean Enhanced
 
-![Tests](https://github.com/Jlf2526/zoom-deep-clean-enhanced/workflows/Tests/badge.svg)
+![Tests](https://github.com/PHLthy215/zoom-deep-clean-enhanced/workflows/Tests/badge.svg)
 ![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)
 ![macOS](https://img.shields.io/badge/platform-macOS-lightgrey.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
@@ -51,7 +51,7 @@ zoom-deep-clean-enhanced --force
 pip install zoom-deep-clean-enhanced
 
 # From source
-git clone https://github.com/phlthy215/zoom-deep-clean-enhanced.git
+git clone https://github.com/PHLthy215/zoom-deep-clean-enhanced.git
 cd zoom-deep-clean-enhanced
 pip install -e .
 ```
@@ -104,7 +104,7 @@ MIT License
 ## 🔗 Links
 
 - **Documentation**: [docs/](docs/)
-- **Issues**: [GitHub Issues](https://github.com/phlthy215/zoom-deep-clean-enhanced/issues)
+- **Issues**: [GitHub Issues](https://github.com/PHLthy215/zoom-deep-clean-enhanced/issues)
 - **PyPI**: [zoom-deep-clean-enhanced](https://pypi.org/project/zoom-deep-clean-enhanced/)
 
 ---

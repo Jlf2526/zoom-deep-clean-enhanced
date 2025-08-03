@@ -35,11 +35,11 @@ setup(
     name="zoom-deep-clean-enhanced",
     version="2.2.0",
     author="PHLthy215",
-    author_email="phlthy215@example.com",
+    author_email="PHLthy215@example.com",
     description="Enhanced VM-Aware & System-Wide Zoom cleanup utility for macOS",
     long_description=read_readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/phlthy215/zoom-deep-clean-enhanced",
+    url="https://github.com/PHLthy215/zoom-deep-clean-enhanced",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -95,8 +95,8 @@ setup(
         "fingerprint-removal",
     ],
     project_urls={
-        "Bug Reports": "https://github.com/phlthy215/zoom-deep-clean-enhanced/issues",
-        "Source": "https://github.com/phlthy215/zoom-deep-clean-enhanced",
-        "Documentation": "https://github.com/phlthy215/zoom-deep-clean-enhanced/blob/main/README.md",
+        "Bug Reports": "https://github.com/PHLthy215/zoom-deep-clean-enhanced/issues",
+        "Source": "https://github.com/PHLthy215/zoom-deep-clean-enhanced",
+        "Documentation": "https://github.com/PHLthy215/zoom-deep-clean-enhanced/blob/main/README.md",
     },
 )

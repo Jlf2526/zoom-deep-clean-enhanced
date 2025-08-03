@@ -30,7 +30,7 @@ open htmlcov/index.html
 ### Installation
 ```bash
 # Clone repository
-git clone https://github.com/Jlf2526/zoom-deep-clean-enhanced.git
+git clone https://github.com/PHLthy215/zoom-deep-clean-enhanced.git
 cd zoom-deep-clean-enhanced
 
 # Create isolated test environment

@@ -16,7 +16,7 @@ from .cleaner_enhanced import ZoomDeepCleanerEnhanced, SecurityError
 
 __version__ = "2.2.0"
 __author__ = "PHLthy215"
-__email__ = "phlthy215@example.com"
+__email__ = "PHLthy215@example.com"
 __description__ = "Enhanced VM-Aware & System-Wide Zoom cleanup utility for macOS"
 
 __all__ = [

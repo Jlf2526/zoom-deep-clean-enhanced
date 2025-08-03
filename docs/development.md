@@ -4,7 +4,7 @@
 
 ```bash
 # Clone repository
-git clone https://github.com/phlthy215/zoom-deep-clean-enhanced.git
+git clone https://github.com/PHLthy215/zoom-deep-clean-enhanced.git
 cd zoom-deep-clean-enhanced
 
 # Create virtual environment

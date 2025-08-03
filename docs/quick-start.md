@@ -7,7 +7,7 @@
 pip install zoom-deep-clean-enhanced
 
 # Or install from source
-git clone https://github.com/phlthy215/zoom-deep-clean-enhanced.git
+git clone https://github.com/PHLthy215/zoom-deep-clean-enhanced.git
 cd zoom-deep-clean-enhanced
 pip install -e .
 ```

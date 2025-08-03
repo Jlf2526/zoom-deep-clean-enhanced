@@ -1084,7 +1084,7 @@ CPU Cores: {psutil.cpu_count()}
                          <p>Complete Zoom removal tool for macOS with VM awareness and device fingerprint elimination.</p>
                          <p>Created by: PHLthy215</p>
                          <p>Enhanced with modern PySide6 interface</p>
-                         <p><a href="https://github.com/phlthy215/zoom-deep-clean-enhanced">GitHub Repository</a></p>
+                         <p><a href="https://github.com/PHLthy215/zoom-deep-clean-enhanced">GitHub Repository</a></p>
                          """,
         )
 
