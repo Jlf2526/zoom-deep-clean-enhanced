@@ -342,7 +342,7 @@ zoom-deep-clean-enhanced --no-comprehensive-search
 - `0`: Success - enhanced cleanup completed without errors
 - `1`: Failure - enhanced cleanup completed with errors (check log file)
 - `2`: Security Error - operation aborted for security reasons
-- `130`: User Cancellation - operation cancelled by user
+- `130`: User Cancellation - operation cancelled by user (Ctrl+C) - all completed operations were successful
 
 ## 🤝 Contributing to Enhanced Version
 

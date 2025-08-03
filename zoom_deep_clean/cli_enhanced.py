@@ -258,11 +258,20 @@ Examples:
                 print("🔄 System reboot initiated...")
             sys.exit(0)
         else:
-            print(
-                f"\n❌ Enhanced deep clean completed with errors or security violations."
-            )
-            print(f"Check {args.log_file} for details.")
-            sys.exit(1)
+            # Check if operation was cancelled by user
+            if cleaner.was_cancelled_by_user():
+                print(
+                    f"\n⏹️  Enhanced deep clean was cancelled by user."
+                )
+                print(f"✅ All operations completed before cancellation were successful.")
+                print(f"📋 Check {args.log_file} for details of what was completed.")
+                sys.exit(130)  # Standard exit code for user cancellation (Ctrl+C)
+            else:
+                print(
+                    f"\n❌ Enhanced deep clean completed with errors or security violations."
+                )
+                print(f"Check {args.log_file} for details.")
+                sys.exit(1)
 
     except SecurityError as e:
         print(f"\n🚨 Security Error: {e}")

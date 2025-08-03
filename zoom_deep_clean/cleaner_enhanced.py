@@ -68,6 +68,7 @@ class ZoomDeepCleanerEnhanced:
         self.new_hostname = new_hostname
         self.user_home = os.path.expanduser("~")
         self.backup_dir = BACKUP_DIR if enable_backup else None
+        self.user_cancelled = False  # Track user cancellation separately from errors
 
         self.cleanup_stats = {
             "files_removed": 0,
@@ -1021,6 +1022,10 @@ class ZoomDeepCleanerEnhanced:
         except Exception as e:
             self.logger.error(f"Could not save report: {e}")
 
+    def was_cancelled_by_user(self) -> bool:
+        """Check if the operation was cancelled by user (Ctrl+C)"""
+        return self.user_cancelled
+
     def run_deep_clean(self) -> bool:
         """Execute the complete enhanced deep clean process"""
         try:
@@ -1151,6 +1156,7 @@ class ZoomDeepCleanerEnhanced:
 
         except KeyboardInterrupt:
             self.logger.warning("Operation cancelled by user")
+            self.user_cancelled = True
             return False
         except Exception as e:
             self.logger.error(f"Unexpected error during cleanup: {e}")
