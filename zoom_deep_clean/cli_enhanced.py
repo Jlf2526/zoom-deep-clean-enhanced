@@ -23,7 +23,7 @@ Enhanced Security Features:
   • VM-aware process detection and termination
   • Comprehensive system-wide file search
   • Enhanced command injection prevention
-  • Path validation and sanitization  
+  • Path validation and sanitization
   • Zoom file verification with extended patterns
   • Automatic backup functionality
   • Comprehensive audit logging

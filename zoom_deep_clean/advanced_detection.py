@@ -8,16 +8,12 @@ Version: 2.3.0 - Advanced Detection
 """
 
 import os
-import sys
-import subprocess
-import json
 import re
-import sqlite3
+import subprocess
 import plistlib
-from typing import List, Dict, Tuple, Optional, Set, Any
+from typing import List, Dict, Any
 from pathlib import Path
 import logging
-from datetime import datetime, timedelta
 
 
 class SystemFingerprintAnalyzer:

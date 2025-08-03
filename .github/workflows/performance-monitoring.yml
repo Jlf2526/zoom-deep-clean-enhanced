@@ -172,7 +172,7 @@ jobs:
         echo "- Alert Threshold: ${PERFORMANCE_ALERT_THRESHOLD}%"
     
     - name: Store performance metrics
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: performance-metrics-py${{ matrix.python-version }}
         path: |
