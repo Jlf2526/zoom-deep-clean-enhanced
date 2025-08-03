@@ -479,7 +479,7 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
         mock_result.stderr = ""
         mock_subprocess.return_value = mock_result
 
-        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=True)
+        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=False)
 
         if hasattr(cleaner, "_run_command"):
             success, output = cleaner._run_command("echo", ["echo", "test"])
@@ -496,7 +496,7 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
         mock_result.stderr = "Error message"
         mock_subprocess.return_value = mock_result
 
-        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=True)
+        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=False)
 
         if hasattr(cleaner, "_run_command"):
             success, output = cleaner._run_command("false", ["false"])
@@ -509,7 +509,7 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
         """Test _run_command with timeout"""
         mock_subprocess.side_effect = subprocess.TimeoutExpired("test", 5)
 
-        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=True)
+        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=False)
 
         if hasattr(cleaner, "_run_command"):
             success, output = cleaner._run_command("sleep", ["sleep", "10"], timeout=1)
@@ -522,7 +522,7 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
         """Test _run_command with exception"""
         mock_subprocess.side_effect = Exception("Subprocess error")
 
-        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=True)
+        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=False)
 
         if hasattr(cleaner, "_run_command"):
             success, output = cleaner._run_command("bad_command", ["bad_command"])
@@ -539,7 +539,7 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
         mock_result.stderr = ""
         mock_subprocess.return_value = mock_result
 
-        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=True)
+        cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=False)
 
         if hasattr(cleaner, "_run_command"):
             success, output = cleaner._run_command(

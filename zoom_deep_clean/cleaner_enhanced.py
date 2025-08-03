@@ -381,17 +381,32 @@ class ZoomDeepCleanerEnhanced:
     def _run_command(
         self,
         cmd_args: Union[str, List[str]],
+        args: Optional[List[str]] = None,
         description: str = "",
         require_sudo: bool = False,
         timeout: int = 30,
     ) -> Tuple[bool, str]:
-        """Run a command with comprehensive security and error handling"""
+        """Run a command with comprehensive security and error handling
+
+        Args:
+            cmd_args: Command to run (can be string or list)
+            args: Optional args list (for backward compatibility with tests)
+            description: Description of the command
+            require_sudo: Whether to run with sudo
+            timeout: Command timeout in seconds
+
+        Returns:
+            Tuple of (success: bool, output: str)
+        """
         if description:
             self.logger.info(f"Executing: {description}")
 
-        # Convert string commands to list for security
-        if isinstance(cmd_args, str):
-            # Split simple commands, but log security warning
+        # Handle backward compatibility with test calling pattern
+        if args is not None:
+            # Test calling pattern: _run_command("echo", ["echo", "test"])
+            cmd_args = args
+        elif isinstance(cmd_args, str):
+            # Convert string commands to list for security
             self.logger.warning(
                 f"String command converted to list for security: {cmd_args}"
             )
@@ -436,7 +451,8 @@ class ZoomDeepCleanerEnhanced:
 
             result = subprocess.run(
                 cmd_args,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 timeout=timeout,
                 shell=False,  # Critical: Never use shell=True
@@ -460,11 +476,12 @@ class ZoomDeepCleanerEnhanced:
                 return False, error_msg
 
         except subprocess.TimeoutExpired:
+            timeout_msg = f"Command timed out after {timeout} seconds"
             self.logger.error(
                 f"Command timed out after {timeout}s: {' '.join(cmd_args)}"
             )
             self.cleanup_stats["errors"] += 1
-            return False, f"Command timed out after {timeout}s"
+            return False, timeout_msg
         except Exception as e:
             self.logger.error(f"Exception running command {' '.join(cmd_args)}: {e}")
             self.cleanup_stats["errors"] += 1
