@@ -8,7 +8,16 @@ Enhanced Version: 2.2.0 - VM-Aware & System-Wide
 
 import sys
 import argparse
-from .cleaner_enhanced import ZoomDeepCleanerEnhanced, DEFAULT_LOG_FILE, SecurityError
+
+# Handle both direct execution and package import
+try:
+    # Try relative import first (when run as package)
+    from .cleaner_enhanced import ZoomDeepCleanerEnhanced, DEFAULT_LOG_FILE, SecurityError
+except ImportError:
+    # Fall back to absolute import (when run directly)
+    import os
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from zoom_deep_clean.cleaner_enhanced import ZoomDeepCleanerEnhanced, DEFAULT_LOG_FILE, SecurityError
 
 
 def main() -> None:

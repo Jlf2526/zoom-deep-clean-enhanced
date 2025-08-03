@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""
+Zoom Deep Clean Enhanced - Convenient Launcher Script
+Automatically handles import paths and execution
+"""
+
+import sys
+import os
+
+# Add the project directory to Python path
+project_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, project_dir)
+
+# Import and run the CLI
+if __name__ == "__main__":
+    from zoom_deep_clean.cli_enhanced import main
+    main()
