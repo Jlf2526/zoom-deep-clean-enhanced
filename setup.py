@@ -10,21 +10,26 @@ Enhanced Version: 2.2.0
 from setuptools import setup, find_packages
 import os
 
+
 # Read the README file
 def read_readme():
-    readme_path = os.path.join(os.path.dirname(__file__), 'README.md')
+    readme_path = os.path.join(os.path.dirname(__file__), "README.md")
     if os.path.exists(readme_path):
-        with open(readme_path, 'r', encoding='utf-8') as f:
+        with open(readme_path, "r", encoding="utf-8") as f:
             return f.read()
     return "Enhanced Zoom Deep Clean - VM-Aware & System-Wide cleanup utility"
 
+
 # Read requirements
 def read_requirements():
-    req_path = os.path.join(os.path.dirname(__file__), 'requirements.txt')
+    req_path = os.path.join(os.path.dirname(__file__), "requirements.txt")
     if os.path.exists(req_path):
-        with open(req_path, 'r', encoding='utf-8') as f:
-            return [line.strip() for line in f if line.strip() and not line.startswith('#')]
+        with open(req_path, "r", encoding="utf-8") as f:
+            return [
+                line.strip() for line in f if line.strip() and not line.startswith("#")
+            ]
     return []
+
 
 setup(
     name="zoom-deep-clean-enhanced",
@@ -79,8 +84,15 @@ setup(
         ],
     },
     keywords=[
-        "zoom", "cleanup", "privacy", "macos", "vm", "virtual-machine",
-        "system-administration", "security", "fingerprint-removal"
+        "zoom",
+        "cleanup",
+        "privacy",
+        "macos",
+        "vm",
+        "virtual-machine",
+        "system-administration",
+        "security",
+        "fingerprint-removal",
     ],
     project_urls={
         "Bug Reports": "https://github.com/phlthy215/zoom-deep-clean-enhanced/issues",
