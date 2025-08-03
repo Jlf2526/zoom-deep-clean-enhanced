@@ -264,7 +264,9 @@ Examples:
                 print(
                     f"[SUCCESS] All operations completed before cancellation were successful."
                 )
-                print(f"[INFO] Check {args.log_file} for details of what was completed.")
+                print(
+                    f"[INFO] Check {args.log_file} for details of what was completed."
+                )
                 sys.exit(130)  # Standard exit code for user cancellation (Ctrl+C)
             else:
                 print(
