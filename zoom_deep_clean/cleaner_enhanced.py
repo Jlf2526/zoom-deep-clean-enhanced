@@ -381,7 +381,7 @@ class ZoomDeepCleanerEnhanced:
     def _run_command(
         self,
         cmd_args: Union[str, List[str]],
-        args: Optional[List[str]] = None,
+        args_or_description: Union[List[str], str, None] = None,
         description: str = "",
         require_sudo: bool = False,
         timeout: int = 30,
@@ -390,23 +390,30 @@ class ZoomDeepCleanerEnhanced:
 
         Args:
             cmd_args: Command to run (can be string or list)
-            args: Optional args list (for backward compatibility with tests)
-            description: Description of the command
+            args_or_description: Either args list (for test compatibility) or description string
+            description: Description of the command (when args_or_description is args list)
             require_sudo: Whether to run with sudo
             timeout: Command timeout in seconds
 
         Returns:
             Tuple of (success: bool, output: str)
         """
+        # Handle different calling patterns
+        if args_or_description is not None:
+            if isinstance(args_or_description, list):
+                # Test calling pattern: _run_command("echo", ["echo", "test"])
+                cmd_args = args_or_description
+                # description parameter is already set
+            elif isinstance(args_or_description, str):
+                # Dry-run test calling pattern: _run_command(["pkill", "-f", "zoom"], "Kill zoom processes")
+                description = args_or_description
+                # cmd_args is already set correctly
+
         if description:
             self.logger.info(f"Executing: {description}")
 
-        # Handle backward compatibility with test calling pattern
-        if args is not None:
-            # Test calling pattern: _run_command("echo", ["echo", "test"])
-            cmd_args = args
-        elif isinstance(cmd_args, str):
-            # Convert string commands to list for security
+        # Convert string commands to list for security
+        if isinstance(cmd_args, str):
             self.logger.warning(
                 f"String command converted to list for security: {cmd_args}"
             )
@@ -421,7 +428,11 @@ class ZoomDeepCleanerEnhanced:
             return False, str(e)
 
         if self.dry_run:
-            dry_run_msg = f"DRY RUN: Would execute: {' '.join(cmd_args)}"
+            # Create comprehensive dry-run log message
+            if description:
+                dry_run_msg = f"DRY RUN: {description} | Command: {' '.join(cmd_args)}"
+            else:
+                dry_run_msg = f"DRY RUN: Would execute: {' '.join(cmd_args)}"
             self.logger.info(dry_run_msg)
 
             # Ensure the message is written to file immediately
@@ -1222,7 +1233,8 @@ class ZoomDeepCleanerEnhanced:
                         op
                         for op in self.dry_run_operations
                         if any(
-                            cmd in op["command"] for cmd in ["pkill", "kill", "pgrep"]
+                            cmd in str(op["command"])
+                            for cmd in ["pkill", "kill", "pgrep"]
                         )
                     ]
                 ),
@@ -1230,14 +1242,17 @@ class ZoomDeepCleanerEnhanced:
                     [
                         op
                         for op in self.dry_run_operations
-                        if any(cmd in op["command"] for cmd in ["find", "rm", "delete"])
+                        if any(
+                            cmd in str(op["command"])
+                            for cmd in ["find", "rm", "delete"]
+                        )
                     ]
                 ),
                 "security_operations": len(
                     [
                         op
                         for op in self.dry_run_operations
-                        if "security" in op["command"]
+                        if "security" in str(op["command"])
                     ]
                 ),
                 "system_operations": len(
@@ -1245,7 +1260,7 @@ class ZoomDeepCleanerEnhanced:
                         op
                         for op in self.dry_run_operations
                         if any(
-                            cmd in op["command"]
+                            cmd in str(op["command"])
                             for cmd in ["launchctl", "system_profiler", "ioreg"]
                         )
                     ]
