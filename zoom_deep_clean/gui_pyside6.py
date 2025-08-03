@@ -118,22 +118,50 @@ class CleanupWorker(QObject):
     def run_cleanup(self):
         """Execute cleanup operation with progress reporting"""
         try:
-            # Initialize cleaner with config
+            # Extract force flag and performance monitoring flag
+            force_cleanup = self.cleaner_config.pop('_force_cleanup', False)
+            enable_performance_monitoring = self.cleaner_config.pop('_enable_performance_monitoring', True)
+            
+            self.log_message.emit(f"DEBUG: Cleaner config after processing: {self.cleaner_config}")
+            self.log_message.emit(f"DEBUG: Force cleanup: {force_cleanup}")
+            self.log_message.emit(f"DEBUG: Performance monitoring: {enable_performance_monitoring}")
+            
+            # Initialize cleaner with valid config
+            self.progress_updated.emit(5, "Creating cleaner instance...")
             self.cleaner = ZoomDeepCleanerEnhanced(**self.cleaner_config)
             
             # Connect to cleaner's progress signals if available
             self.progress_updated.emit(10, "Initializing cleanup...")
+            self.log_message.emit("✅ Cleaner initialized successfully")
+            
+            # Handle force cleanup logic
+            if not self.cleaner.dry_run and not force_cleanup:
+                # This would normally be handled by the GUI confirmation dialog
+                # but we'll let the GUI handle the confirmation
+                pass
             
             # Run the cleanup
+            self.progress_updated.emit(20, "Starting cleanup process...")
+            self.log_message.emit("🔄 Running cleanup process...")
+            
             success = self.cleaner.run_deep_clean()
+            
+            self.progress_updated.emit(90, "Generating report...")
+            self.log_message.emit("📊 Generating cleanup report...")
             
             # Generate report
             report = self.cleaner.generate_report()
             
+            self.progress_updated.emit(100, "Cleanup completed!")
+            self.log_message.emit(f"✅ Cleanup completed with success: {success}")
+            
             self.cleanup_finished.emit(success, report)
             
         except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
             self.log_message.emit(f"ERROR: Cleanup failed: {str(e)}")
+            self.log_message.emit(f"ERROR: Full traceback:\n{error_details}")
             self.cleanup_finished.emit(False, {})
     
     def cancel_cleanup(self):
@@ -704,11 +732,12 @@ class ModernZoomCleanerGUI(QMainWindow):
             'dry_run': self.dry_run_cb.isChecked(),
             'verbose': self.verbose_cb.isChecked(),
             'enable_backup': self.backup_cb.isChecked(),
-            'force': self.force_cb.isChecked(),
             'enable_advanced_features': self.advanced_features_cb.isChecked(),
             'vm_aware': self.vm_aware_cb.isChecked(),
             'system_reboot': self.system_reboot_cb.isChecked(),
-            'enable_performance_monitoring': self.performance_monitoring_cb.isChecked()
+            # Store force separately for use in cleanup logic
+            '_force_cleanup': self.force_cb.isChecked(),
+            '_enable_performance_monitoring': self.performance_monitoring_cb.isChecked()
         }
     
     def start_cleanup(self):
@@ -719,7 +748,11 @@ class ModernZoomCleanerGUI(QMainWindow):
         # Validate configuration
         config = self.get_cleaner_config()
         
-        if not config['dry_run'] and not config['force']:
+        # Handle force confirmation
+        force_cleanup = config.get('_force_cleanup', False)
+        is_dry_run = config.get('dry_run', True)
+        
+        if not is_dry_run and not force_cleanup:
             reply = QMessageBox.question(
                 self, 
                 "Confirm Cleanup",
