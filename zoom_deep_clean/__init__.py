@@ -21,15 +21,17 @@ __description__ = "Enhanced VM-Aware & System-Wide Zoom cleanup utility for macO
 
 __all__ = [
     "ZoomDeepCleanerEnhanced",
-    "SecurityError", 
+    "SecurityError",
     "__version__",
     "__author__",
     "__email__",
-    "__description__"
+    "__description__",
 ]
+
 
 # CLI main function available via lazy import to avoid warnings
 def main():
     """Entry point for CLI - lazy import to avoid module loading issues"""
     from .cli_enhanced import main as cli_main
+
     return cli_main()
