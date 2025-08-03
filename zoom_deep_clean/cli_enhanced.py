@@ -8,8 +8,6 @@ Enhanced Version: 2.2.0 - VM-Aware & System-Wide
 
 import sys
 import argparse
-import os
-from typing import Optional
 from .cleaner_enhanced import ZoomDeepCleanerEnhanced, DEFAULT_LOG_FILE, SecurityError
 
 
