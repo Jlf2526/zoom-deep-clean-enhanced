@@ -1,0 +1,158 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        # Test across multiple macOS versions for compatibility
+        os: [macos-12, macos-13, macos-14, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        exclude:
+          # Reduce matrix size by excluding some combinations
+          - os: macos-12
+            python-version: '3.12'
+          - os: macos-13
+            python-version: '3.9'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: System Information
+      run: |
+        echo "=== System Information ==="
+        sw_vers
+        echo "Python version: $(python --version)"
+        echo "Architecture: $(uname -m)"
+        echo "Kernel: $(uname -r)"
+        echo "=== Environment ==="
+        echo "RUNNER_OS: ${{ runner.os }}"
+        echo "Matrix OS: ${{ matrix.os }}"
+        echo "Matrix Python: ${{ matrix.python-version }}"
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/test-requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r test-requirements.txt
+        # Install psutil for full performance monitoring tests
+        pip install psutil
+    
+    - name: Verify package structure
+      run: |
+        echo "=== Package Structure ==="
+        find zoom_deep_clean -name "*.py" | head -10
+        echo "=== Test Structure ==="
+        find tests -name "*.py"
+    
+    - name: Run tests with coverage
+      run: |
+        python -m pytest tests/ -v --cov=zoom_deep_clean --cov-report=xml --cov-report=term-missing
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: Upload coverage to Codecov (fallback)
+      if: failure()
+      run: |
+        echo "Codecov action failed, trying direct uploader..."
+        curl -Os https://uploader.codecov.io/latest/macos/codecov
+        chmod +x codecov
+        ./codecov -f ./coverage.xml -F unittests || echo "Coverage upload failed but continuing..."
+    
+    - name: Test CLI functionality
+      run: |
+        echo "=== Testing CLI ==="
+        python -m zoom_deep_clean.cli_enhanced --help
+        python -m zoom_deep_clean.cli_enhanced --version
+        python -m zoom_deep_clean.cli_enhanced --dry-run --verbose || echo "CLI test completed"
+    
+    - name: Test package imports
+      run: |
+        echo "=== Testing Package Imports ==="
+        python -c "import zoom_deep_clean; print(f'Package version: {zoom_deep_clean.__version__}')"
+        python -c "from zoom_deep_clean import ZoomDeepCleanerEnhanced; print('Core import: OK')"
+        python -c "from zoom_deep_clean.security_enhancements import SecurityValidator; print('Security import: OK')"
+        python -c "from zoom_deep_clean.advanced_detection import SystemFingerprintAnalyzer; print('Detection import: OK')"
+        python -c "from zoom_deep_clean.cross_platform_support import PlatformDetector; print('Cross-platform import: OK')"
+        python -c "from zoom_deep_clean.performance_monitoring import PerformanceMonitor; print('Performance import: OK')"
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install linting tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black
+    
+    - name: Run flake8
+      run: |
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 zoom_deep_clean scripts tests setup.py --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings. GitHub editor is 127 chars wide
+        flake8 zoom_deep_clean scripts tests setup.py --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Check code formatting with black
+      run: |
+        black --check --diff setup.py scripts/ tests/ zoom_deep_clean/
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+    
+    - name: Run bandit security scan
+      run: |
+        bandit -r zoom_deep_clean/ -f json -o bandit-report.json || true
+        bandit -r zoom_deep_clean/ || true
+    
+    - name: Check dependencies for known vulnerabilities
+      run: |
+        pip install -r test-requirements.txt
+        safety check || true
