@@ -76,14 +76,27 @@ jobs:
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: false
+        disable_search: true
+        verbose: true
     
-    - name: Upload coverage to Codecov (fallback)
+    - name: Upload coverage to Codecov (fallback bash uploader)
       if: failure()
       run: |
-        echo "Codecov action failed, trying direct uploader..."
-        curl -Os https://uploader.codecov.io/latest/macos/codecov
+        echo "Codecov action failed, trying bash uploader..."
+        bash <(curl -s https://codecov.io/bash) -f ./coverage.xml -F unittests || echo "Fallback coverage upload failed but continuing..."
+    
+    - name: Upload coverage to Codecov (final fallback)
+      if: failure()
+      run: |
+        echo "Bash uploader failed, trying direct binary download..."
+        # Detect architecture and download appropriate binary
+        if [ "$(uname -m)" = "arm64" ]; then
+          curl -Os https://uploader.codecov.io/latest/macos-arm64/codecov
+        else
+          curl -Os https://uploader.codecov.io/latest/macos/codecov
+        fi
         chmod +x codecov
-        ./codecov -f ./coverage.xml -F unittests || echo "Coverage upload failed but continuing..."
+        ./codecov -f ./coverage.xml -F unittests || echo "All coverage upload methods failed but continuing CI..."
     
     - name: Test CLI functionality
       run: |
