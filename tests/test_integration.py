@@ -7,8 +7,6 @@ Verify all modules can be imported and work together
 import unittest
 import tempfile
 import os
-import sys
-import logging
 
 
 class TestModuleIntegration(unittest.TestCase):
@@ -138,8 +136,15 @@ class TestModuleIntegration(unittest.TestCase):
             from zoom_deep_clean import cross_platform_support
             from zoom_deep_clean import performance_monitoring
 
-            # If we get here, no circular imports
-            self.assertTrue(True)
+            # Verify imports worked by checking they have expected attributes
+            self.assertTrue(hasattr(zoom_deep_clean, '__version__'))
+            self.assertTrue(hasattr(cleaner_enhanced, 'ZoomDeepCleanerEnhanced'))
+            self.assertTrue(hasattr(cli_enhanced, 'main'))
+            self.assertTrue(hasattr(advanced_features, 'AdvancedFeatures'))
+            self.assertTrue(hasattr(security_enhancements, 'SecurityValidator'))
+            self.assertTrue(hasattr(advanced_detection, 'SystemFingerprintAnalyzer'))
+            self.assertTrue(hasattr(cross_platform_support, 'PlatformDetector'))
+            self.assertTrue(hasattr(performance_monitoring, 'PerformanceMonitor'))
 
         except ImportError as e:
             self.fail(f"Circular import detected: {e}")

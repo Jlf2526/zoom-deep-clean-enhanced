@@ -11,9 +11,9 @@ import json
 import time
 import subprocess
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List
 import statistics
 
 
@@ -138,7 +138,7 @@ class PerformanceTracker:
 
             match = re.search(r"(\d+) passed", pytest_output)
             return int(match.group(1)) if match else 0
-        except:
+        except (AttributeError, ValueError, TypeError):
             return 0
 
     def analyze_performance(self, current: Dict[str, float]) -> Dict[str, any]:

@@ -5,7 +5,6 @@ Ensures proper module discovery and imports
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add the project root to Python path
