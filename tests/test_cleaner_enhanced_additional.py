@@ -517,18 +517,19 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             self.assertFalse(success)
             self.assertIn("timed out", output)
 
-    @patch("subprocess.run")
-    def test_run_command_exception(self, mock_subprocess):
+    def test_run_command_exception(self):
         """Test _run_command with exception"""
-        mock_subprocess.side_effect = Exception("Subprocess error")
-
         cleaner = ZoomDeepCleanerEnhanced(log_file=self.temp_log, dry_run=False)
 
-        if hasattr(cleaner, "_run_command"):
-            success, output = cleaner._run_command("bad_command", ["bad_command"])
+        # Mock subprocess.run only for the specific call we're testing
+        with patch("subprocess.run") as mock_subprocess:
+            mock_subprocess.side_effect = Exception("Subprocess error")
 
-            self.assertFalse(success)
-            self.assertIn("Subprocess error", output)
+            if hasattr(cleaner, "_run_command"):
+                success, output = cleaner._run_command("bad_command", ["bad_command"])
+
+                self.assertFalse(success)
+                self.assertIn("Subprocess error", output)
 
     @patch("subprocess.run")
     def test_run_command_with_sudo(self, mock_subprocess):
@@ -546,10 +547,12 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
                 "privileged_command", ["privileged_command"], require_sudo=True
             )
 
-            # Should prepend sudo to command
-            mock_subprocess.assert_called_once()
-            args = mock_subprocess.call_args[0][0]
-            self.assertEqual(args[0], "sudo")
+            # Should prepend sudo to command - check the last call
+            self.assertTrue(mock_subprocess.called)
+            # Get the last call (the actual command we're testing)
+            last_call_args = mock_subprocess.call_args_list[-1][0][0]
+            self.assertEqual(last_call_args[0], "sudo")
+            self.assertEqual(last_call_args[1], "privileged_command")
 
 
 class TestZoomDeepCleanerEnhancedVMServices(unittest.TestCase):
