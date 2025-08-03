@@ -1,0 +1,25 @@
+# Zoom Deep Clean Enhanced - PySide6 Requirements
+# Modern GUI with performance optimizations
+# Created by: PHLthy215 (Enhanced with PySide6)
+# Version: 2.3.0
+
+# Core GUI framework
+PySide6>=6.5.0
+
+# Performance monitoring (optional but recommended)
+psutil>=5.9.0
+
+# Async support for Python < 3.7 compatibility
+asyncio-compat>=0.1.2; python_version < '3.7'
+
+# Development dependencies (install with pip install -r requirements-pyside6.txt -r requirements-dev.txt)
+# See requirements-dev.txt for testing and development tools
+
+# Optional: Enhanced logging and debugging
+colorlog>=6.7.0
+
+# Optional: Better JSON handling for configuration
+orjson>=3.8.0; platform_machine != 'arm64'  # orjson doesn't support Apple Silicon yet
+
+# Fallback JSON for Apple Silicon
+ujson>=5.7.0; platform_machine == 'arm64'
