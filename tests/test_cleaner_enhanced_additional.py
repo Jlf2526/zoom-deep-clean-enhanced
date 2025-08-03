@@ -11,6 +11,7 @@ import tempfile
 import shutil
 import logging
 import json
+import subprocess  # Added to fix subprocess.TimeoutExpired error
 from unittest.mock import patch, MagicMock, Mock, mock_open
 from pathlib import Path
 
@@ -498,8 +499,8 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             pass
 
     @patch('subprocess.run')
-    def test_execute_command_success(self, mock_subprocess):
-        """Test _execute_command with successful execution"""
+    def test_run_command_success(self, mock_subprocess):
+        """Test _run_command with successful execution"""
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "Success output"
@@ -511,15 +512,15 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             dry_run=True
         )
         
-        if hasattr(cleaner, '_execute_command'):
-            success, output = cleaner._execute_command("echo", ["echo", "test"])
+        if hasattr(cleaner, '_run_command'):
+            success, output = cleaner._run_command("echo", ["echo", "test"])
             
             self.assertTrue(success)
             self.assertEqual(output, "Success output")
 
     @patch('subprocess.run')
-    def test_execute_command_failure(self, mock_subprocess):
-        """Test _execute_command with command failure"""
+    def test_run_command_failure(self, mock_subprocess):
+        """Test _run_command with command failure"""
         mock_result = MagicMock()
         mock_result.returncode = 1
         mock_result.stdout = ""
@@ -531,15 +532,15 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             dry_run=True
         )
         
-        if hasattr(cleaner, '_execute_command'):
-            success, output = cleaner._execute_command("false", ["false"])
+        if hasattr(cleaner, '_run_command'):
+            success, output = cleaner._run_command("false", ["false"])
             
             self.assertFalse(success)
             self.assertIn("Error message", output)
 
     @patch('subprocess.run')
-    def test_execute_command_timeout(self, mock_subprocess):
-        """Test _execute_command with timeout"""
+    def test_run_command_timeout(self, mock_subprocess):
+        """Test _run_command with timeout"""
         mock_subprocess.side_effect = subprocess.TimeoutExpired("test", 5)
         
         cleaner = ZoomDeepCleanerEnhanced(
@@ -547,15 +548,15 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             dry_run=True
         )
         
-        if hasattr(cleaner, '_execute_command'):
-            success, output = cleaner._execute_command("sleep", ["sleep", "10"], timeout=1)
+        if hasattr(cleaner, '_run_command'):
+            success, output = cleaner._run_command("sleep", ["sleep", "10"], timeout=1)
             
             self.assertFalse(success)
             self.assertIn("timed out", output)
 
     @patch('subprocess.run')
-    def test_execute_command_exception(self, mock_subprocess):
-        """Test _execute_command with exception"""
+    def test_run_command_exception(self, mock_subprocess):
+        """Test _run_command with exception"""
         mock_subprocess.side_effect = Exception("Subprocess error")
         
         cleaner = ZoomDeepCleanerEnhanced(
@@ -563,15 +564,15 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             dry_run=True
         )
         
-        if hasattr(cleaner, '_execute_command'):
-            success, output = cleaner._execute_command("bad_command", ["bad_command"])
+        if hasattr(cleaner, '_run_command'):
+            success, output = cleaner._run_command("bad_command", ["bad_command"])
             
             self.assertFalse(success)
             self.assertIn("Subprocess error", output)
 
     @patch('subprocess.run')
-    def test_execute_command_with_sudo(self, mock_subprocess):
-        """Test _execute_command with sudo requirement"""
+    def test_run_command_with_sudo(self, mock_subprocess):
+        """Test _run_command with sudo requirement"""
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "Success"
@@ -583,8 +584,8 @@ class TestZoomDeepCleanerEnhancedCommandExecution(unittest.TestCase):
             dry_run=True
         )
         
-        if hasattr(cleaner, '_execute_command'):
-            success, output = cleaner._execute_command(
+        if hasattr(cleaner, '_run_command'):
+            success, output = cleaner._run_command(
                 "privileged_command", 
                 ["privileged_command"], 
                 require_sudo=True
@@ -626,7 +627,7 @@ class TestZoomDeepCleanerEnhancedVMServices(unittest.TestCase):
         except Exception as e:
             self.fail(f"stop_vm_services raised an exception: {e}")
 
-    @patch('zoom_deep_clean.cleaner_enhanced.ZoomDeepCleanerEnhanced._execute_command')
+    @patch('zoom_deep_clean.cleaner_enhanced.ZoomDeepCleanerEnhanced._run_command')
     def test_stop_vm_services_enabled(self, mock_execute):
         """Test stop_vm_services when VM aware is enabled"""
         mock_execute.return_value = (True, "Service stopped")
@@ -679,15 +680,15 @@ class TestZoomDeepCleanerEnhancedCleanupOperations(unittest.TestCase):
         except Exception as e:
             self.fail(f"run_deep_clean raised an exception: {e}")
 
-    def test_get_cleanup_stats(self):
-        """Test get_cleanup_stats method"""
+    def test_cleanup_stats_access(self):
+        """Test cleanup_stats attribute access"""
         cleaner = ZoomDeepCleanerEnhanced(
             log_file=self.temp_log,
             dry_run=True
         )
         
         # Test getting cleanup stats
-        stats = cleaner.get_cleanup_stats()
+        stats = cleaner.cleanup_stats
         
         self.assertIsInstance(stats, dict)
         expected_keys = ["files_removed", "processes_killed", "errors", "warnings"]
@@ -705,7 +706,7 @@ class TestZoomDeepCleanerEnhancedCleanupOperations(unittest.TestCase):
         cleaner.cleanup_stats["files_removed"] = 10
         cleaner.cleanup_stats["processes_killed"] = 5
         
-        stats = cleaner.get_cleanup_stats()
+        stats = cleaner.cleanup_stats
         self.assertEqual(stats["files_removed"], 10)
         self.assertEqual(stats["processes_killed"], 5)
 
