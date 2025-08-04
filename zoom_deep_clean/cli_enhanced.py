@@ -57,19 +57,54 @@ Examples:
         """,
     )
 
-    # Core cleaning options
+    # Version argument
     parser.add_argument(
-        "--force",
+        "--version", action="version", version="%(prog)s 2.2.0"
+    )
+
+    # Core cleaning options - use mutually exclusive group
+    force_group = parser.add_mutually_exclusive_group()
+    force_group.add_argument(
+        "--force", "-f",
         action="store_true",
         help="Execute cleanup (required for actual cleaning)",
     )
-    parser.add_argument(
+    force_group.add_argument(
         "--dry-run",
         action="store_true",
         help="Preview what would be cleaned without making changes",
     )
+
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
+
+    # Backup options
+    backup_group = parser.add_mutually_exclusive_group()
+    backup_group.add_argument(
+        "--backup",
+        action="store_true",
+        default=True,
+        help="Create backups before removal (default: enabled)",
+    )
+    backup_group.add_argument(
+        "--no-backup",
+        action="store_true",
+        help="Skip creating backups before removal",
+    )
+
+    # VM options
+    vm_group = parser.add_mutually_exclusive_group()
+    vm_group.add_argument(
+        "--vm-aware",
+        action="store_true",
+        default=True,
+        help="Enable VM-aware cleaning (default: enabled)",
+    )
+    vm_group.add_argument(
+        "--no-vm",
+        action="store_true",
+        help="Disable VM-aware cleaning",
     )
 
     # Comprehensive cleaning mode
@@ -111,19 +146,58 @@ Examples:
         help="Randomize system hostname for complete device identity reset",
     )
 
-    # Legacy options for compatibility
-    parser.add_argument(
-        "--vm-aware",
+    # Advanced features
+    advanced_group = parser.add_mutually_exclusive_group()
+    advanced_group.add_argument(
+        "--enable-advanced-features",
         action="store_true",
-        help="Enable VM-aware cleaning (default: enabled)",
+        default=True,
+        help="Enable advanced cleaning features (default: enabled)",
     )
-    parser.add_argument(
-        "--backup",
+    advanced_group.add_argument(
+        "--disable-advanced-features",
         action="store_true",
-        help="Create backups before removal (default: enabled)",
+        help="Disable advanced cleaning features",
     )
 
-    args = parser.parse_args()
+    # MAC spoofing
+    parser.add_argument(
+        "--enable-mac-spoofing",
+        action="store_true",
+        help="Enable MAC address spoofing for network interface reset",
+    )
+
+    # Hostname options
+    parser.add_argument(
+        "--reset-hostname",
+        action="store_true",
+        help="Reset system hostname",
+    )
+    parser.add_argument(
+        "--new-hostname",
+        type=str,
+        help="Set a new hostname (requires --reset-hostname)",
+    )
+
+    # Logging options
+    parser.add_argument(
+        "--log-file",
+        type=str,
+        help="Custom log file path",
+    )
+
+    # Export options
+    parser.add_argument(
+        "--export-dry-run",
+        type=str,
+        help="Export dry run results to a file",
+    )
+
+    try:
+        args = parser.parse_args()
+    except SystemExit as e:
+        # argparse exits with code 2 for argument errors
+        sys.exit(2)
 
     # Validate arguments
     if not args.force and not args.dry_run:
@@ -131,14 +205,19 @@ Examples:
         print("Use --help for more information")
         sys.exit(1)
 
-    if args.force and args.dry_run:
-        print("❌ Error: Cannot use both --force and --dry-run")
+    # Validate hostname arguments
+    if args.new_hostname and not args.reset_hostname:
+        print("❌ Error: --new-hostname requires --reset-hostname")
         sys.exit(1)
 
     # Validate comprehensive mode requirements
     if (args.install_fresh or args.system_reboot) and not args.comprehensive:
         print("❌ Error: --install-fresh and --system-reboot require --comprehensive")
         sys.exit(1)
+
+    # Validate export dry run
+    if args.export_dry_run and not args.dry_run:
+        print("⚠️  Warning: --export-dry-run is most useful with --dry-run mode")
 
     # Setup logging
     logger = setup_logging(args.verbose)
@@ -156,40 +235,80 @@ Examples:
             else:
                 logger.info("🚀 Starting Standard Zoom Deep Clean")
 
-            # Configure ZoomFixer options
+            # Configure options
             enable_network_reset = args.zoomfixer_mode or args.network_reset
             enable_hostname_randomization = (
-                args.zoomfixer_mode or args.randomize_hostname
+                args.zoomfixer_mode or args.randomize_hostname or args.reset_hostname
             )
+            enable_advanced_features = (
+                not args.disable_advanced_features and args.enable_advanced_features
+            )
+            vm_aware = not args.no_vm and args.vm_aware
+            backup_enabled = not args.no_backup and args.backup
 
-            cleaner = ZoomDeepCleanerEnhanced(
-                verbose=args.verbose,
-                dry_run=args.dry_run,
-                enable_advanced_features=True,
-                reset_hostname=enable_hostname_randomization,
-            )
+            # Create cleaner with proper arguments
+            cleaner_kwargs = {
+                "verbose": args.verbose,
+                "dry_run": args.dry_run,
+                "enable_advanced_features": enable_advanced_features,
+                "reset_hostname": enable_hostname_randomization,
+                "vm_aware": vm_aware,
+                "enable_backup": backup_enabled,
+                "enable_mac_spoofing": getattr(args, 'enable_mac_spoofing', False),
+            }
+
+            # Add log file if specified
+            if args.log_file:
+                cleaner_kwargs["log_file"] = args.log_file
+
+            # Add new hostname if specified
+            if args.new_hostname:
+                cleaner_kwargs["new_hostname"] = args.new_hostname
+
+            cleaner = ZoomDeepCleanerEnhanced(**cleaner_kwargs)
             success = cleaner.run_deep_clean()
+
+            # Handle export dry run
+            if args.export_dry_run and args.dry_run:
+                try:
+                    export_path = cleaner.export_dry_run_operations(args.export_dry_run)
+                    logger.info(f"📄 Dry run results exported to: {export_path}")
+                except Exception as e:
+                    logger.warning(f"⚠️  Failed to export dry run results: {e}")
 
         if success:
             logger.info("✅ Zoom Deep Clean completed successfully")
             if not args.dry_run:
                 logger.info("💡 Recommendation: Restart your system and reinstall Zoom")
+            
+            # Check if user was cancelled
+            if hasattr(cleaner, 'was_cancelled_by_user') and cleaner.was_cancelled_by_user():
+                sys.exit(130)  # User cancellation
         else:
             logger.error("❌ Zoom Deep Clean completed with errors")
             logger.info("📄 Check the log file for details")
+            
+            # Check if user was cancelled
+            if hasattr(cleaner, 'was_cancelled_by_user') and cleaner.was_cancelled_by_user():
+                sys.exit(130)  # User cancellation
 
         sys.exit(0 if success else 1)
 
     except KeyboardInterrupt:
         logger.error("❌ Operation cancelled by user")
-        sys.exit(1)
+        sys.exit(130)  # Standard exit code for SIGINT
     except Exception as e:
-        logger.error(f"❌ Unexpected error: {e}")
-        if args.verbose:
-            import traceback
-
-            traceback.print_exc()
-        sys.exit(1)
+        from zoom_deep_clean.cleaner_enhanced import SecurityError
+        
+        if isinstance(e, SecurityError):
+            logger.error(f"🔒 Security error: {e}")
+            sys.exit(2)  # Security error
+        else:
+            logger.error(f"❌ Unexpected error: {e}")
+            if getattr(args, 'verbose', False):
+                import traceback
+                traceback.print_exc()
+            sys.exit(1)  # General error
 
 
 if __name__ == "__main__":
