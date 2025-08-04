@@ -61,7 +61,7 @@ Examples:
     parser.add_argument("--version", action="version", version="%(prog)s 2.2.0")
 
     # Core cleaning options - use mutually exclusive group
-    force_group = parser.add_mutually_exclusive_group()
+    force_group = parser.add_mutually_exclusive_group(required=True)
     force_group.add_argument(
         "--force",
         "-f",
@@ -198,21 +198,13 @@ Examples:
         # argparse exits with code 2 for argument errors
         sys.exit(2)
 
-    # Validate arguments
-    if not args.force and not args.dry_run:
-        print("❌ Error: Must specify either --force or --dry-run")
-        print("Use --help for more information")
-        sys.exit(1)
-
     # Validate hostname arguments
     if args.new_hostname and not args.reset_hostname:
-        print("❌ Error: --new-hostname requires --reset-hostname")
-        sys.exit(1)
+        parser.error("--new-hostname requires --reset-hostname")
 
     # Validate comprehensive mode requirements
     if (args.install_fresh or args.system_reboot) and not args.comprehensive:
-        print("❌ Error: --install-fresh and --system-reboot require --comprehensive")
-        sys.exit(1)
+        parser.error("--install-fresh and --system-reboot require --comprehensive")
 
     # Validate export dry run
     if args.export_dry_run and not args.dry_run:
