@@ -50,16 +50,12 @@ class PerformanceMonitor:
 
     def __init__(self, logger: logging.Logger, enable_detailed_monitoring: bool = True):
         self.logger = logger
-        self.enable_detailed_monitoring = (
-            enable_detailed_monitoring and PSUTIL_AVAILABLE
-        )
+        self.enable_detailed_monitoring = enable_detailed_monitoring and PSUTIL_AVAILABLE
         self.metrics: List[PerformanceMetrics] = []
         self.active_operations: Dict[str, Dict[str, Any]] = {}
 
         if not PSUTIL_AVAILABLE:
-            self.logger.warning(
-                "psutil not available - performance monitoring will be limited"
-            )
+            self.logger.warning("psutil not available - performance monitoring will be limited")
             self.system_baseline = {}
         else:
             self.system_baseline = self._establish_baseline()
@@ -242,9 +238,7 @@ class PerformanceMonitor:
         # Available memory alert
         memory_available = metrics.get("memory_available", 0)
         if memory_available < 500 * 1024 * 1024:  # Less than 500MB
-            self.logger.warning(
-                f"⚠️ Low available memory: {memory_available / (1024*1024):.1f}MB"
-            )
+            self.logger.warning(f"⚠️ Low available memory: {memory_available / (1024*1024):.1f}MB")
 
     def get_performance_summary(self) -> Dict[str, Any]:
         """Get comprehensive performance summary"""
@@ -263,9 +257,7 @@ class PerformanceMonitor:
 
         # CPU and memory statistics
         cpu_usages = [m.cpu_usage_end - m.cpu_usage_start for m in self.metrics]
-        memory_usages = [
-            m.memory_usage_end - m.memory_usage_start for m in self.metrics
-        ]
+        memory_usages = [m.memory_usage_end - m.memory_usage_start for m in self.metrics]
 
         # Operation breakdown
         operation_stats = {}
@@ -292,9 +284,7 @@ class PerformanceMonitor:
                 "successful_operations": successful_operations,
                 "failed_operations": failed_operations,
                 "success_rate": (
-                    (successful_operations / total_operations) * 100
-                    if total_operations > 0
-                    else 0
+                    (successful_operations / total_operations) * 100 if total_operations > 0 else 0
                 ),
                 "total_duration": sum(durations),
                 "average_duration": avg_duration,
@@ -302,9 +292,7 @@ class PerformanceMonitor:
                 "min_duration": min_duration,
             },
             "system_impact": {
-                "avg_cpu_change": (
-                    sum(cpu_usages) / len(cpu_usages) if cpu_usages else 0
-                ),
+                "avg_cpu_change": (sum(cpu_usages) / len(cpu_usages) if cpu_usages else 0),
                 "max_cpu_change": max(cpu_usages) if cpu_usages else 0,
                 "avg_memory_change": (
                     sum(memory_usages) / len(memory_usages) if memory_usages else 0
@@ -352,9 +340,7 @@ class PerformanceMonitor:
             )
 
         # Memory usage analysis
-        memory_changes = [
-            m.memory_usage_end - m.memory_usage_start for m in self.metrics
-        ]
+        memory_changes = [m.memory_usage_end - m.memory_usage_start for m in self.metrics]
         max_memory_change = max(memory_changes) if memory_changes else 0
 
         if max_memory_change > 20:
@@ -373,9 +359,7 @@ class PerformanceMonitor:
         for op_name, durations in operation_stats.items():
             avg_duration = sum(durations) / len(durations)
             if avg_duration > 60:  # Operations taking more than 1 minute
-                recommendations.append(
-                    f"Operation '{op_name}' is slow - consider optimization"
-                )
+                recommendations.append(f"Operation '{op_name}' is slow - consider optimization")
 
         return recommendations
 
@@ -448,15 +432,11 @@ class OptimizationEngine:
         # Adjust based on historical performance if available
         if self.performance_monitor.metrics:
             similar_operations = [
-                m
-                for m in self.performance_monitor.metrics
-                if operation_type in m.operation_name
+                m for m in self.performance_monitor.metrics if operation_type in m.operation_name
             ]
 
             if similar_operations:
-                avg_duration = sum(m.duration for m in similar_operations) / len(
-                    similar_operations
-                )
+                avg_duration = sum(m.duration for m in similar_operations) / len(similar_operations)
 
                 # If operations are slow, reduce batch size
                 if avg_duration > 10:
@@ -465,9 +445,7 @@ class OptimizationEngine:
                     base_batch_size = min(200, base_batch_size * 2)
 
         suggested_batch_size = min(base_batch_size, total_items)
-        self.logger.info(
-            f"Suggested batch size for {operation_type}: {suggested_batch_size}"
-        )
+        self.logger.info(f"Suggested batch size for {operation_type}: {suggested_batch_size}")
 
         return suggested_batch_size
 
@@ -554,10 +532,7 @@ class ResourceManager:
 
         while time.time() - wait_start < max_wait_time:
             # Check concurrent operations limit
-            if (
-                self.active_operations
-                >= self.resource_limits["max_concurrent_operations"]
-            ):
+            if self.active_operations >= self.resource_limits["max_concurrent_operations"]:
                 time.sleep(1)
                 continue
 
