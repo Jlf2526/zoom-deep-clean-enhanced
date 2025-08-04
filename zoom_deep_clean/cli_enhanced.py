@@ -58,14 +58,13 @@ Examples:
     )
 
     # Version argument
-    parser.add_argument(
-        "--version", action="version", version="%(prog)s 2.2.0"
-    )
+    parser.add_argument("--version", action="version", version="%(prog)s 2.2.0")
 
     # Core cleaning options - use mutually exclusive group
     force_group = parser.add_mutually_exclusive_group()
     force_group.add_argument(
-        "--force", "-f",
+        "--force",
+        "-f",
         action="store_true",
         help="Execute cleanup (required for actual cleaning)",
     )
@@ -254,7 +253,7 @@ Examples:
                 "reset_hostname": enable_hostname_randomization,
                 "vm_aware": vm_aware,
                 "enable_backup": backup_enabled,
-                "enable_mac_spoofing": getattr(args, 'enable_mac_spoofing', False),
+                "enable_mac_spoofing": getattr(args, "enable_mac_spoofing", False),
             }
 
             # Add log file if specified
@@ -280,16 +279,22 @@ Examples:
             logger.info("✅ Zoom Deep Clean completed successfully")
             if not args.dry_run:
                 logger.info("💡 Recommendation: Restart your system and reinstall Zoom")
-            
+
             # Check if user was cancelled
-            if hasattr(cleaner, 'was_cancelled_by_user') and cleaner.was_cancelled_by_user():
+            if (
+                hasattr(cleaner, "was_cancelled_by_user")
+                and cleaner.was_cancelled_by_user()
+            ):
                 sys.exit(130)  # User cancellation
         else:
             logger.error("❌ Zoom Deep Clean completed with errors")
             logger.info("📄 Check the log file for details")
-            
+
             # Check if user was cancelled
-            if hasattr(cleaner, 'was_cancelled_by_user') and cleaner.was_cancelled_by_user():
+            if (
+                hasattr(cleaner, "was_cancelled_by_user")
+                and cleaner.was_cancelled_by_user()
+            ):
                 sys.exit(130)  # User cancellation
 
         sys.exit(0 if success else 1)
@@ -299,14 +304,15 @@ Examples:
         sys.exit(130)  # Standard exit code for SIGINT
     except Exception as e:
         from zoom_deep_clean.cleaner_enhanced import SecurityError
-        
+
         if isinstance(e, SecurityError):
             logger.error(f"🔒 Security error: {e}")
             sys.exit(2)  # Security error
         else:
             logger.error(f"❌ Unexpected error: {e}")
-            if getattr(args, 'verbose', False):
+            if getattr(args, "verbose", False):
                 import traceback
+
                 traceback.print_exc()
             sys.exit(1)  # General error
 
