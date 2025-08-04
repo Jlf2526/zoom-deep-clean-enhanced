@@ -1,10 +1,10 @@
 # Zoom Deep Clean Enhanced - Requirements
-# VM-Aware & System-Wide cleanup utility
+# Comprehensive Zoom removal with deep system cleaning
 # Created by: PHLthy215
 # Enhanced Version: 2.2.0
 
-# Core requirements (minimal for maximum compatibility)
-# No external dependencies required - uses only Python standard library
+# Core requirements - Uses only Python standard library
+# No external dependencies required for maximum compatibility
 
 # Optional development dependencies (install with pip install -e ".[dev]")
 # pytest>=6.0
