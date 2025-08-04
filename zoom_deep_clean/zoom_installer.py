@@ -63,13 +63,19 @@ class ZoomInstaller:
         download_path = os.path.join(self.temp_dir, filename)
 
         # Check if we already have a recent download
-        if not force_redownload and self.download_path and os.path.exists(self.download_path):
+        if (
+            not force_redownload
+            and self.download_path
+            and os.path.exists(self.download_path)
+        ):
             file_age = time.time() - os.path.getmtime(self.download_path)
             if file_age < 3600:  # Less than 1 hour old
                 self.logger.info(f"Using existing download: {self.download_path}")
                 return self.download_path
 
-        self.logger.info(f"Downloading Zoom {zoom_info['version']} from {zoom_info['url']}")
+        self.logger.info(
+            f"Downloading Zoom {zoom_info['version']} from {zoom_info['url']}"
+        )
 
         try:
             # Download with progress tracking
