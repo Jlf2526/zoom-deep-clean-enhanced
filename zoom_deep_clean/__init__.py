@@ -19,7 +19,9 @@ from .comprehensive_cli import ComprehensiveZoomCLI
 __version__ = "2.2.0"
 __author__ = "PHLthy215"
 __email__ = "PHLthy215@example.com"
-__description__ = "Enhanced comprehensive Zoom cleanup utility for macOS with deep system cleaning"
+__description__ = (
+    "Enhanced comprehensive Zoom cleanup utility for macOS with deep system cleaning"
+)
 
 __all__ = [
     "ZoomDeepCleanerEnhanced",

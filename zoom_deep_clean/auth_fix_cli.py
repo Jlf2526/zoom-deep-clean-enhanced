@@ -64,7 +64,9 @@ Common Issues Fixed:
         action="store_true",
         help="Show what would be done without making changes",
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
     parser.add_argument(
         "--report-path",
         type=str,
@@ -107,7 +109,9 @@ Common Issues Fixed:
 
             if auth_results["success"]:
                 print("✅ Authentication cleanup completed successfully!")
-                print(f"   • {len(auth_results['cleaned_items'])} authentication items cleaned")
+                print(
+                    f"   • {len(auth_results['cleaned_items'])} authentication items cleaned"
+                )
             else:
                 print("⚠️ Authentication cleanup completed with some issues:")
                 for error in auth_results["errors"][:3]:  # Show first 3 errors
@@ -144,7 +148,9 @@ Common Issues Fixed:
                 print("⚠️ Device fingerprint verification found issues:")
                 print(f"   • {items_remaining} items still need attention")
                 if items_cleaned > 0:
-                    print(f"   • {items_cleaned} items were cleaned during verification")
+                    print(
+                        f"   • {items_cleaned} items were cleaned during verification"
+                    )
 
         # Step 3: Generate recommendations
         print("\n📋 STEP 3: Generating Recommendations")
@@ -224,7 +230,9 @@ def generate_recommendations(results: dict) -> list:
             recommendations.append(
                 "⚠️ Some authentication data could not be cleaned - try running as administrator"
             )
-            recommendations.append("🔧 Consider manually clearing browser cookies for zoom.us")
+            recommendations.append(
+                "🔧 Consider manually clearing browser cookies for zoom.us"
+            )
 
     # Device fingerprint recommendations
     if device_results:

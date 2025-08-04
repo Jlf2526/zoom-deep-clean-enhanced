@@ -68,7 +68,9 @@ Examples:
         action="store_true",
         help="Preview what would be cleaned without making changes",
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
 
     # Comprehensive cleaning mode
     parser.add_argument(
@@ -156,7 +158,9 @@ Examples:
 
             # Configure ZoomFixer options
             enable_network_reset = args.zoomfixer_mode or args.network_reset
-            enable_hostname_randomization = args.zoomfixer_mode or args.randomize_hostname
+            enable_hostname_randomization = (
+                args.zoomfixer_mode or args.randomize_hostname
+            )
 
             cleaner = ZoomDeepCleanerEnhanced(
                 verbose=args.verbose,

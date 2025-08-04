@@ -70,7 +70,11 @@ class PlatformDetector:
         elif self.platform == "windows":
             return {
                 "version": platform.version(),
-                "build": (platform.win32_ver()[1] if hasattr(platform, "win32_ver") else "unknown"),
+                "build": (
+                    platform.win32_ver()[1]
+                    if hasattr(platform, "win32_ver")
+                    else "unknown"
+                ),
                 "machine": self.architecture,
             }
         elif self.platform == "linux":
@@ -305,7 +309,9 @@ class WindowsZoomCleaner:
                     self.logger.info(f"DRY RUN: Would stop service {service}")
                     stopped += 1
                 else:
-                    result = subprocess.run(["sc", "stop", service], capture_output=True, text=True)
+                    result = subprocess.run(
+                        ["sc", "stop", service], capture_output=True, text=True
+                    )
                     if result.returncode == 0:
                         self.logger.info(f"Stopped service: {service}")
                         stopped += 1
@@ -332,7 +338,9 @@ class WindowsZoomCleaner:
                     if "zoom" in file.lower():
                         file_path = os.path.join(prefetch_path, file)
                         if self.dry_run:
-                            self.logger.info(f"DRY RUN: Would remove prefetch {file_path}")
+                            self.logger.info(
+                                f"DRY RUN: Would remove prefetch {file_path}"
+                            )
                         else:
                             os.remove(file_path)
                             self.logger.info(f"Removed prefetch: {file_path}")
@@ -389,7 +397,9 @@ class LinuxZoomCleaner:
                 self.logger.info("DRY RUN: Would terminate Zoom processes")
                 return 1
             else:
-                result = subprocess.run(["pkill", "-f", "zoom"], capture_output=True, text=True)
+                result = subprocess.run(
+                    ["pkill", "-f", "zoom"], capture_output=True, text=True
+                )
                 if result.returncode == 0:
                     self.logger.info("Terminated Zoom processes")
                     return 1
@@ -463,7 +473,9 @@ class LinuxZoomCleaner:
                                 remove_cmd + ["zoom"], capture_output=True, text=True
                             )
                             if remove_result.returncode == 0:
-                                self.logger.info(f"Removed Zoom package with {remove_cmd[0]}")
+                                self.logger.info(
+                                    f"Removed Zoom package with {remove_cmd[0]}"
+                                )
                                 removed += 1
                         break  # Only use one package manager
             except Exception as e:
@@ -481,7 +493,9 @@ class LinuxZoomCleaner:
                     if "zoom" in file.lower():
                         file_path = os.path.join(systemd_user_dir, file)
                         if self.dry_run:
-                            self.logger.info(f"DRY RUN: Would remove systemd service {file_path}")
+                            self.logger.info(
+                                f"DRY RUN: Would remove systemd service {file_path}"
+                            )
                         else:
                             os.remove(file_path)
                             self.logger.info(f"Removed systemd service: {file_path}")
@@ -501,12 +515,16 @@ class LinuxZoomCleaner:
                         if "zoom" in file.lower() and file.endswith(".desktop"):
                             file_path = os.path.join(desktop_dir, file)
                             if self.dry_run:
-                                self.logger.info(f"DRY RUN: Would remove desktop entry {file_path}")
+                                self.logger.info(
+                                    f"DRY RUN: Would remove desktop entry {file_path}"
+                                )
                             else:
                                 os.remove(file_path)
                                 self.logger.info(f"Removed desktop entry: {file_path}")
                 except Exception as e:
-                    self.logger.warning(f"Could not clean desktop entries in {desktop_dir}: {e}")
+                    self.logger.warning(
+                        f"Could not clean desktop entries in {desktop_dir}: {e}"
+                    )
 
 
 class CrossPlatformZoomCleaner:
@@ -543,7 +561,9 @@ class CrossPlatformZoomCleaner:
 
         if self.platform_detector.platform == "darwin":
             # Use existing macOS implementation
-            results["cleanup_results"] = {"message": "Use existing macOS ZoomDeepCleanerEnhanced"}
+            results["cleanup_results"] = {
+                "message": "Use existing macOS ZoomDeepCleanerEnhanced"
+            }
         else:
             # Use platform-specific cleaner
             results["cleanup_results"] = (

@@ -75,7 +75,9 @@ class ZoomCleanerGUI:
         self.root.bind("<Command-c>", lambda e: self.copy_selection())
         self.root.bind("<Control-c>", lambda e: self.copy_selection())  # For non-Mac
         self.root.bind("<Command-Shift-k>", lambda e: self.clear_output())
-        self.root.bind("<Control-Shift-k>", lambda e: self.clear_output())  # For non-Mac
+        self.root.bind(
+            "<Control-Shift-k>", lambda e: self.clear_output()
+        )  # For non-Mac
 
         # Focus management
         self.root.bind("<Tab>", self.focus_next_widget)
@@ -174,7 +176,9 @@ class ZoomCleanerGUI:
     def create_header(self, parent):
         """Create header section"""
         header_frame = ttk.Frame(parent)
-        header_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 20))
+        header_frame.grid(
+            row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 20)
+        )
         header_frame.columnconfigure(1, weight=1)
 
         # Icon/Logo (using emoji for now)
@@ -185,7 +189,9 @@ class ZoomCleanerGUI:
         title_frame = ttk.Frame(header_frame)
         title_frame.grid(row=0, column=1, sticky=(tk.W, tk.E))
 
-        title_label = ttk.Label(title_frame, text="Zoom Deep Clean Enhanced", style="Title.TLabel")
+        title_label = ttk.Label(
+            title_frame, text="Zoom Deep Clean Enhanced", style="Title.TLabel"
+        )
         title_label.grid(row=0, column=0, sticky=tk.W)
 
         subtitle_label = ttk.Label(
@@ -207,7 +213,9 @@ class ZoomCleanerGUI:
         """Create basic options section"""
         # Basic Options Frame
         basic_frame = ttk.LabelFrame(parent, text="Basic Options", padding="15")
-        basic_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 15))
+        basic_frame.grid(
+            row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 15)
+        )
         basic_frame.columnconfigure(1, weight=1)
 
         row = 0
@@ -228,9 +236,9 @@ class ZoomCleanerGUI:
         row += 1
 
         # Verbose
-        ttk.Checkbutton(basic_frame, text="Detailed Logging", variable=self.verbose_var).grid(
-            row=row, column=0, sticky=tk.W, pady=2
-        )
+        ttk.Checkbutton(
+            basic_frame, text="Detailed Logging", variable=self.verbose_var
+        ).grid(row=row, column=0, sticky=tk.W, pady=2)
         ttk.Label(
             basic_frame,
             text="Show detailed progress information",
@@ -240,9 +248,9 @@ class ZoomCleanerGUI:
         row += 1
 
         # Backup
-        ttk.Checkbutton(basic_frame, text="Create Backups", variable=self.backup_var).grid(
-            row=row, column=0, sticky=tk.W, pady=2
-        )
+        ttk.Checkbutton(
+            basic_frame, text="Create Backups", variable=self.backup_var
+        ).grid(row=row, column=0, sticky=tk.W, pady=2)
         ttk.Label(
             basic_frame,
             text="Backup files before removal (recommended)",
@@ -252,9 +260,9 @@ class ZoomCleanerGUI:
         row += 1
 
         # VM Aware
-        ttk.Checkbutton(basic_frame, text="VM-Aware Cleanup", variable=self.vm_aware_var).grid(
-            row=row, column=0, sticky=tk.W, pady=2
-        )
+        ttk.Checkbutton(
+            basic_frame, text="VM-Aware Cleanup", variable=self.vm_aware_var
+        ).grid(row=row, column=0, sticky=tk.W, pady=2)
         ttk.Label(
             basic_frame,
             text="Stop VM services and clean VM-specific processes",
@@ -279,8 +287,12 @@ class ZoomCleanerGUI:
     def create_advanced_options(self, parent):
         """Create advanced options section"""
         # Advanced Options Frame
-        advanced_frame = ttk.LabelFrame(parent, text="Advanced Fingerprint Features", padding="15")
-        advanced_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 15))
+        advanced_frame = ttk.LabelFrame(
+            parent, text="Advanced Fingerprint Features", padding="15"
+        )
+        advanced_frame.grid(
+            row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 15)
+        )
         advanced_frame.columnconfigure(1, weight=1)
 
         row = 0
@@ -313,9 +325,9 @@ class ZoomCleanerGUI:
         hostname_frame.grid(row=row, column=1, sticky=(tk.W, tk.E), padx=(10, 0))
         hostname_frame.columnconfigure(1, weight=1)
 
-        ttk.Label(hostname_frame, text="Custom name:", font=("SF Pro Display", 10)).grid(
-            row=0, column=0, sticky=tk.W
-        )
+        ttk.Label(
+            hostname_frame, text="Custom name:", font=("SF Pro Display", 10)
+        ).grid(row=0, column=0, sticky=tk.W)
         self.hostname_entry = ttk.Entry(
             hostname_frame, textvariable=self.new_hostname_var, width=20
         )
@@ -347,7 +359,9 @@ class ZoomCleanerGUI:
         log_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 15))
         log_frame.columnconfigure(1, weight=1)
 
-        ttk.Label(log_frame, text="Log file location:").grid(row=0, column=0, sticky=tk.W, pady=2)
+        ttk.Label(log_frame, text="Log file location:").grid(
+            row=0, column=0, sticky=tk.W, pady=2
+        )
 
         log_entry_frame = ttk.Frame(log_frame)
         log_entry_frame.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(10, 0))
@@ -356,9 +370,9 @@ class ZoomCleanerGUI:
         log_entry = ttk.Entry(log_entry_frame, textvariable=self.log_file_var)
         log_entry.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 5))
 
-        ttk.Button(log_entry_frame, text="Browse...", command=self.browse_log_file).grid(
-            row=0, column=1
-        )
+        ttk.Button(
+            log_entry_frame, text="Browse...", command=self.browse_log_file
+        ).grid(row=0, column=1)
 
     def create_action_buttons(self, parent):
         """Create action buttons"""
@@ -394,7 +408,9 @@ class ZoomCleanerGUI:
         self.stop_btn.grid(row=0, column=2, padx=(0, 10))
 
         # View logs button
-        self.logs_btn = ttk.Button(button_frame, text="📋 View Logs", command=self.view_logs)
+        self.logs_btn = ttk.Button(
+            button_frame, text="📋 View Logs", command=self.view_logs
+        )
         self.logs_btn.grid(row=0, column=3, padx=(0, 10))
 
         # Help button
@@ -479,7 +495,9 @@ class ZoomCleanerGUI:
         status_frame.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E))
         status_frame.columnconfigure(1, weight=1)
 
-        self.status_label = ttk.Label(status_frame, text="Ready", font=("SF Pro Display", 10))
+        self.status_label = ttk.Label(
+            status_frame, text="Ready", font=("SF Pro Display", 10)
+        )
         self.status_label.grid(row=0, column=0, sticky=tk.W)
 
         # Statistics labels
@@ -548,7 +566,9 @@ class ZoomCleanerGUI:
 
         # Bind right-click to show context menu
         self.output_text.bind("<Button-2>", self.show_context_menu)  # macOS right-click
-        self.output_text.bind("<Control-Button-1>", self.show_context_menu)  # macOS ctrl-click
+        self.output_text.bind(
+            "<Control-Button-1>", self.show_context_menu
+        )  # macOS ctrl-click
 
     def show_context_menu(self, event):
         """Show context menu at cursor position"""
@@ -704,7 +724,9 @@ class ZoomCleanerGUI:
 
             # Validate hostname if specified
             hostname = (
-                self.new_hostname_var.get().strip() if self.reset_hostname_var.get() else None
+                self.new_hostname_var.get().strip()
+                if self.reset_hostname_var.get()
+                else None
             )
             if hostname and not self.validate_hostname(hostname):
                 self.log_message(f"❌ Invalid hostname: {hostname}", "error")
@@ -916,7 +938,9 @@ Right-click in the output area for copy/paste options.
         )
 
         # Vertical scrollbar
-        v_scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=help_text_widget.yview)
+        v_scrollbar = ttk.Scrollbar(
+            text_frame, orient=tk.VERTICAL, command=help_text_widget.yview
+        )
         help_text_widget.configure(yscrollcommand=v_scrollbar.set)
 
         # Grid the text widget and scrollbar
@@ -931,7 +955,9 @@ Right-click in the output area for copy/paste options.
         button_frame = ttk.Frame(main_frame)
         button_frame.grid(row=1, column=0, pady=(10, 0))
 
-        close_button = ttk.Button(button_frame, text="Close", command=help_window.destroy)
+        close_button = ttk.Button(
+            button_frame, text="Close", command=help_window.destroy
+        )
         close_button.pack()
 
         # Bind mouse wheel scrolling
@@ -945,7 +971,11 @@ Right-click in the output area for copy/paste options.
 
         # Center help window
         help_window.update_idletasks()
-        x = self.root.winfo_x() + (self.root.winfo_width() // 2) - (help_window.winfo_width() // 2)
+        x = (
+            self.root.winfo_x()
+            + (self.root.winfo_width() // 2)
+            - (help_window.winfo_width() // 2)
+        )
         y = (
             self.root.winfo_y()
             + (self.root.winfo_height() // 2)
@@ -970,15 +1000,19 @@ Right-click in the output area for copy/paste options.
         message += f"• Directories removed: {stats.get('directories_removed', 0)}\n"
         message += f"• Processes killed: {stats.get('processes_killed', 0)}\n"
         message += f"• VM services stopped: {stats.get('vm_services_stopped', 0)}\n"
-        message += f"• Keychain entries removed: {stats.get('keychain_entries_removed', 0)}\n"
+        message += (
+            f"• Keychain entries removed: {stats.get('keychain_entries_removed', 0)}\n"
+        )
 
         if self.advanced_features_var.get():
             message += f"\nAdvanced Features:\n"
-            message += f"• Features executed: {stats.get('advanced_features_executed', 0)}\n"
             message += (
-                f"• System identifiers detected: {stats.get('system_identifiers_detected', 0)}\n"
+                f"• Features executed: {stats.get('advanced_features_executed', 0)}\n"
             )
-            message += f"• MDM profiles detected: {stats.get('mdm_profiles_detected', 0)}\n"
+            message += f"• System identifiers detected: {stats.get('system_identifiers_detected', 0)}\n"
+            message += (
+                f"• MDM profiles detected: {stats.get('mdm_profiles_detected', 0)}\n"
+            )
 
         if not self.dry_run_var.get():
             message += f"\n📋 Next Steps:\n"

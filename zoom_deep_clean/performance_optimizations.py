@@ -132,7 +132,9 @@ class AsyncFileScanner:
                     try:
                         if entry.is_file():
                             # Skip files with certain extensions
-                            if any(entry.name.endswith(ext) for ext in self.skip_extensions):
+                            if any(
+                                entry.name.endswith(ext) for ext in self.skip_extensions
+                            ):
                                 continue
 
                             # Check if Zoom-related
@@ -150,7 +152,9 @@ class AsyncFileScanner:
                                     )
                                 )
 
-                        elif entry.is_dir() and not self.should_skip_directory(entry.path):
+                        elif entry.is_dir() and not self.should_skip_directory(
+                            entry.path
+                        ):
                             # Recursively scan subdirectories
                             sub_results = self.scan_directory_sync(entry.path)
                             results.extend(sub_results)
@@ -171,7 +175,9 @@ class AsyncFileScanner:
         self.cancelled = False
         all_results = []
 
-        self.logger.info(f"🔍 Starting parallel scan of {len(directories)} directories...")
+        self.logger.info(
+            f"🔍 Starting parallel scan of {len(directories)} directories..."
+        )
 
         # Submit all directory scans to thread pool
         future_to_dir = {}
@@ -189,7 +195,9 @@ class AsyncFileScanner:
 
                 directory = future_to_dir[future]
                 try:
-                    results = future.result(timeout=300)  # 5 minute timeout per directory
+                    results = future.result(
+                        timeout=300
+                    )  # 5 minute timeout per directory
                     all_results.extend(results)
 
                     completed += 1
@@ -197,14 +205,18 @@ class AsyncFileScanner:
                         progress = int((completed / len(directories)) * 100)
                         progress_callback(progress, f"Scanned {directory}")
 
-                    self.logger.info(f"✅ Scanned {directory}: {len(results)} Zoom files found")
+                    self.logger.info(
+                        f"✅ Scanned {directory}: {len(results)} Zoom files found"
+                    )
 
                 except concurrent.futures.TimeoutError:
                     self.logger.warning(f"⏰ Timeout scanning {directory}")
                 except Exception as e:
                     self.logger.error(f"❌ Error scanning {directory}: {e}")
 
-        self.logger.info(f"🎯 Parallel scan complete: {len(all_results)} total Zoom files found")
+        self.logger.info(
+            f"🎯 Parallel scan complete: {len(all_results)} total Zoom files found"
+        )
         return all_results
 
     def cancel_scan(self):
@@ -266,7 +278,9 @@ class OptimizedProcessManager:
 
         return processes
 
-    def terminate_processes_batch(self, processes: List[Dict[str, Any]]) -> Dict[str, int]:
+    def terminate_processes_batch(
+        self, processes: List[Dict[str, Any]]
+    ) -> Dict[str, int]:
         """Terminate multiple processes efficiently"""
         results = {"terminated": 0, "failed": 0}
 
@@ -336,7 +350,9 @@ class PerformanceOptimizer:
         self.file_scanner = AsyncFileScanner(logger, max_workers)
         self.process_manager = OptimizedProcessManager(logger)
 
-        self.logger.info(f"🚀 Performance optimizer initialized with {max_workers} workers")
+        self.logger.info(
+            f"🚀 Performance optimizer initialized with {max_workers} workers"
+        )
 
     async def optimized_file_search(
         self, search_locations: List[str], progress_callback: Optional[Callable] = None
@@ -351,7 +367,9 @@ class PerformanceOptimizer:
             self.logger.warning("No valid search locations found")
             return []
 
-        self.logger.info(f"🔍 Starting optimized search in {len(existing_locations)} locations")
+        self.logger.info(
+            f"🔍 Starting optimized search in {len(existing_locations)} locations"
+        )
 
         # Perform parallel scan
         scan_results = await self.file_scanner.scan_directories_parallel(
@@ -387,7 +405,9 @@ class PerformanceOptimizer:
 
         elapsed_time = time.time() - start_time
         self.logger.info(f"⚡ Process cleanup completed in {elapsed_time:.2f}s")
-        self.logger.info(f"📊 Terminated: {results['terminated']}, Failed: {results['failed']}")
+        self.logger.info(
+            f"📊 Terminated: {results['terminated']}, Failed: {results['failed']}"
+        )
 
         return {
             "processes_found": len(processes),
@@ -435,7 +455,9 @@ def create_optimized_cleaner_mixin():
                 self.logger, max_workers=kwargs.get("max_workers", None)
             )
 
-        async def optimized_comprehensive_file_search(self, progress_callback=None) -> List[str]:
+        async def optimized_comprehensive_file_search(
+            self, progress_callback=None
+        ) -> List[str]:
             """Optimized version of comprehensive_file_search"""
             search_locations = [
                 "/Library",
@@ -447,7 +469,9 @@ def create_optimized_cleaner_mixin():
             # Add user directories
             try:
                 user_dirs = [
-                    d for d in os.listdir("/Users") if os.path.isdir(os.path.join("/Users", d))
+                    d
+                    for d in os.listdir("/Users")
+                    if os.path.isdir(os.path.join("/Users", d))
                 ]
                 for user in user_dirs:
                     search_locations.append(f"/Users/{user}")

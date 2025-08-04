@@ -78,7 +78,9 @@ class MacOSCompatibilityManager:
                 supported=version_data["supported"],
             )
 
-            self.logger.info(f"Detected macOS {version_string} ({version_data['codename']})")
+            self.logger.info(
+                f"Detected macOS {version_string} ({version_data['codename']})"
+            )
             return self._version_info
 
         except Exception as e:
@@ -102,7 +104,9 @@ class MacOSCompatibilityManager:
             return warnings
 
         if not version_info.supported:
-            warnings.append(f"macOS {version_info.version_string} may not be fully supported")
+            warnings.append(
+                f"macOS {version_info.version_string} may not be fully supported"
+            )
 
         # Version-specific warnings
         if version_info.major == 12:
@@ -118,15 +122,21 @@ class MacOSCompatibilityManager:
 
     def _get_monterey_warnings(self) -> list:
         """Get Monterey-specific warnings"""
-        return ["macOS Monterey: Enhanced privacy features may require additional permissions"]
+        return [
+            "macOS Monterey: Enhanced privacy features may require additional permissions"
+        ]
 
     def _get_ventura_warnings(self) -> list:
         """Get Ventura-specific warnings"""
-        return ["macOS Ventura: System Integrity Protection enhancements may affect cleanup"]
+        return [
+            "macOS Ventura: System Integrity Protection enhancements may affect cleanup"
+        ]
 
     def _get_sonoma_warnings(self) -> list:
         """Get Sonoma-specific warnings"""
-        return ["macOS Sonoma: New privacy controls may require user approval for system access"]
+        return [
+            "macOS Sonoma: New privacy controls may require user approval for system access"
+        ]
 
     def _get_future_version_warnings(self) -> list:
         """Get warnings for future/unknown versions"""
@@ -149,7 +159,9 @@ class MacOSCompatibilityManager:
         self._compatibility_cache[feature] = compatibility
         return compatibility
 
-    def _check_feature_by_version(self, feature: str, version_info: MacOSVersionInfo) -> bool:
+    def _check_feature_by_version(
+        self, feature: str, version_info: MacOSVersionInfo
+    ) -> bool:
         """Check feature compatibility by version"""
         # Define feature compatibility
         feature_matrix = {

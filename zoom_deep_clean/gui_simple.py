@@ -90,18 +90,18 @@ class SimpleZoomCleanerGUI:
         options_frame.pack(fill=tk.X, pady=(0, 10))
 
         # Basic options
-        ttk.Checkbutton(options_frame, text="Preview Mode (Safe)", variable=self.dry_run_var).pack(
-            anchor=tk.W
-        )
-        ttk.Checkbutton(options_frame, text="Detailed Logging", variable=self.verbose_var).pack(
-            anchor=tk.W
-        )
-        ttk.Checkbutton(options_frame, text="Create Backups", variable=self.backup_var).pack(
-            anchor=tk.W
-        )
-        ttk.Checkbutton(options_frame, text="VM-Aware Cleanup", variable=self.vm_aware_var).pack(
-            anchor=tk.W
-        )
+        ttk.Checkbutton(
+            options_frame, text="Preview Mode (Safe)", variable=self.dry_run_var
+        ).pack(anchor=tk.W)
+        ttk.Checkbutton(
+            options_frame, text="Detailed Logging", variable=self.verbose_var
+        ).pack(anchor=tk.W)
+        ttk.Checkbutton(
+            options_frame, text="Create Backups", variable=self.backup_var
+        ).pack(anchor=tk.W)
+        ttk.Checkbutton(
+            options_frame, text="VM-Aware Cleanup", variable=self.vm_aware_var
+        ).pack(anchor=tk.W)
         ttk.Checkbutton(
             options_frame,
             text="Auto Reboot After Cleanup",
@@ -109,7 +109,9 @@ class SimpleZoomCleanerGUI:
         ).pack(anchor=tk.W)
 
         # Advanced options
-        advanced_frame = ttk.LabelFrame(main_frame, text="Advanced Features", padding="10")
+        advanced_frame = ttk.LabelFrame(
+            main_frame, text="Advanced Features", padding="10"
+        )
         advanced_frame.pack(fill=tk.X, pady=(0, 10))
 
         ttk.Checkbutton(
@@ -145,7 +147,9 @@ class SimpleZoomCleanerGUI:
         )
         self.preview_btn.pack(side=tk.LEFT, padx=(0, 5))
 
-        self.run_btn = ttk.Button(button_frame, text="🔥 Run Cleanup", command=self.run_cleanup)
+        self.run_btn = ttk.Button(
+            button_frame, text="🔥 Run Cleanup", command=self.run_cleanup
+        )
         self.run_btn.pack(side=tk.LEFT, padx=(0, 5))
 
         self.stop_btn = ttk.Button(
@@ -266,7 +270,9 @@ class SimpleZoomCleanerGUI:
 
             # Validate hostname if specified
             hostname = (
-                self.new_hostname_var.get().strip() if self.reset_hostname_var.get() else None
+                self.new_hostname_var.get().strip()
+                if self.reset_hostname_var.get()
+                else None
             )
 
             # Create cleaner instance

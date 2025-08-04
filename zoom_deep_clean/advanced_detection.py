@@ -134,7 +134,9 @@ class SystemFingerprintAnalyzer:
             apps_dir = Path("/Applications")
             if apps_dir.exists():
                 identifiers["installed_apps"] = [
-                    app.name for app in apps_dir.iterdir() if app.is_dir() and app.suffix == ".app"
+                    app.name
+                    for app in apps_dir.iterdir()
+                    if app.is_dir() and app.suffix == ".app"
                 ]
 
             # System preferences
@@ -145,7 +147,11 @@ class SystemFingerprintAnalyzer:
                 expanded_path = Path(os.path.expanduser(pref_path))
                 if expanded_path.exists():
                     all_prefs.extend(
-                        [pref.name for pref in expanded_path.iterdir() if pref.suffix == ".plist"]
+                        [
+                            pref.name
+                            for pref in expanded_path.iterdir()
+                            if pref.suffix == ".plist"
+                        ]
                     )
 
             identifiers["preference_files"] = all_prefs
@@ -178,7 +184,9 @@ class SystemFingerprintAnalyzer:
                             lines = f.readlines()
                             history_stats[shell_file] = {
                                 "line_count": len(lines),
-                                "zoom_commands": sum(1 for line in lines if "zoom" in line.lower()),
+                                "zoom_commands": sum(
+                                    1 for line in lines if "zoom" in line.lower()
+                                ),
                             }
                     except Exception:
                         pass
@@ -273,7 +281,9 @@ class SystemFingerprintAnalyzer:
                         usage_patterns["dock_apps_count"] = len(persistent_apps)
 
                         # Check for Zoom in dock (privacy-safe)
-                        zoom_in_dock = any("zoom" in str(app).lower() for app in persistent_apps)
+                        zoom_in_dock = any(
+                            "zoom" in str(app).lower() for app in persistent_apps
+                        )
                         usage_patterns["zoom_in_dock"] = zoom_in_dock
                 except Exception:
                     pass
@@ -289,7 +299,9 @@ class SystemFingerprintAnalyzer:
 
         try:
             # Recent documents
-            recent_docs_path = Path.home() / "Library/Application Support/com.apple.sharedfilelist"
+            recent_docs_path = (
+                Path.home() / "Library/Application Support/com.apple.sharedfilelist"
+            )
             if recent_docs_path.exists():
                 plist_files = list(recent_docs_path.glob("*.sfl*"))
                 access_patterns["recent_docs_lists"] = len(plist_files)
@@ -324,7 +336,9 @@ class SystemFingerprintAnalyzer:
                     with open(wifi_plist, "rb") as f:
                         wifi_data = plistlib.load(f)
                         known_networks = wifi_data.get("KnownNetworks", {})
-                        network_patterns["known_wifi_networks_count"] = len(known_networks)
+                        network_patterns["known_wifi_networks_count"] = len(
+                            known_networks
+                        )
                 except Exception:
                     pass
 
@@ -382,7 +396,9 @@ class SystemFingerprintAnalyzer:
             "recommendations": self._generate_recommendations(risk_level, risk_factors),
         }
 
-    def _generate_recommendations(self, risk_level: str, risk_factors: List[str]) -> List[str]:
+    def _generate_recommendations(
+        self, risk_level: str, risk_factors: List[str]
+    ) -> List[str]:
         """Generate recommendations based on risk assessment"""
         recommendations = []
 
@@ -495,7 +511,8 @@ class ZoomArtifactDetector:
 
                     for file in files:
                         if file.startswith(".") and any(
-                            pattern in file.lower() for pattern in ["zoom", "zoomphone", "zoomchat"]
+                            pattern in file.lower()
+                            for pattern in ["zoom", "zoomphone", "zoomchat"]
                         ):
                             full_path = os.path.join(root, file)
                             hidden_files.append(full_path)
@@ -557,7 +574,9 @@ class ZoomArtifactDetector:
             result = subprocess.run(["mdfind", "zoom"], capture_output=True, text=True)
             if result.returncode == 0:
                 spotlight_results = result.stdout.strip().split("\n")
-                traces.extend([f"Spotlight: {result}" for result in spotlight_results if result])
+                traces.extend(
+                    [f"Spotlight: {result}" for result in spotlight_results if result]
+                )
         except Exception:
             pass
 
