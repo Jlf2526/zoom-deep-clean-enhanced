@@ -10,9 +10,7 @@ import json
 import logging
 import sqlite3
 import plistlib
-from pathlib import Path
-from typing import Dict, List, Optional, Tuple
-import re
+from typing import Dict
 import shutil
 from datetime import datetime
 
@@ -32,9 +30,7 @@ class AuthTokenCleaner:
         logger = logging.getLogger("AuthTokenCleaner")
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -149,13 +145,9 @@ class AuthTokenCleaner:
                             self.cleaned_items.append(f"Keychain entry: {service}")
                             self.logger.info(f"   ✅ Removed keychain entry: {service}")
                         else:
-                            self.logger.warning(
-                                f"   ⚠️ Could not remove keychain entry: {service}"
-                            )
+                            self.logger.warning(f"   ⚠️ Could not remove keychain entry: {service}")
                     else:
-                        self.logger.info(
-                            f"   🔍 Would remove keychain entry: {service}"
-                        )
+                        self.logger.info(f"   🔍 Would remove keychain entry: {service}")
 
             except subprocess.SubprocessError as e:
                 self.logger.warning(f"   ⚠️ Error checking keychain for {service}: {e}")
@@ -314,9 +306,7 @@ class AuthTokenCleaner:
                                 file_path = os.path.join(root, file)
                                 self._remove_auth_file(file_path)
                 except Exception as e:
-                    self.logger.warning(
-                        f"   ⚠️ Error cleaning OAuth from {storage_path}: {e}"
-                    )
+                    self.logger.warning(f"   ⚠️ Error cleaning OAuth from {storage_path}: {e}")
 
     def _clean_sso_data(self):
         """Clean SSO and SAML authentication data"""
@@ -380,9 +370,7 @@ class AuthTokenCleaner:
             # Note: Safari cookies are in binary format and complex to parse
             # For now, we'll note the file for manual review
             self.logger.info(f"   📄 Safari cookies file found: {cookies_path}")
-            self.logger.info(
-                "   ℹ️ Consider clearing Safari cookies manually for zoom.us"
-            )
+            self.logger.info("   ℹ️ Consider clearing Safari cookies manually for zoom.us")
         except Exception as e:
             self.logger.warning(f"   ⚠️ Error processing cookies file: {e}")
 
@@ -397,20 +385,14 @@ class AuthTokenCleaner:
             cursor = conn.cursor()
 
             # Find Zoom-related cookies
-            cursor.execute(
-                "SELECT name, host_key FROM cookies WHERE host_key LIKE '%zoom%'"
-            )
+            cursor.execute("SELECT name, host_key FROM cookies WHERE host_key LIKE '%zoom%'")
             zoom_cookies = cursor.fetchall()
 
             if zoom_cookies and not self.dry_run:
                 cursor.execute("DELETE FROM cookies WHERE host_key LIKE '%zoom%'")
                 conn.commit()
-                self.cleaned_items.append(
-                    f"Chrome cookies: {len(zoom_cookies)} Zoom cookies"
-                )
-                self.logger.info(
-                    f"   ✅ Removed {len(zoom_cookies)} Zoom cookies from Chrome"
-                )
+                self.cleaned_items.append(f"Chrome cookies: {len(zoom_cookies)} Zoom cookies")
+                self.logger.info(f"   ✅ Removed {len(zoom_cookies)} Zoom cookies from Chrome")
 
             conn.close()
 
@@ -485,9 +467,7 @@ class AuthTokenCleaner:
                     # Look for Zoom-related network configurations
                     zoom_found = self._search_plist_for_zoom(plist_data)
                     if zoom_found:
-                        self.logger.info(
-                            f"   🔍 Found Zoom network config in {pref_path}"
-                        )
+                        self.logger.info(f"   🔍 Found Zoom network config in {pref_path}")
                         # Note: We typically don't modify system network preferences
 
                 except Exception as e:
@@ -615,9 +595,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Clean all Zoom authentication tokens and identity data"
     )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose output"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
     parser.add_argument(
         "--dry-run",
         action="store_true",

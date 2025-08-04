@@ -111,13 +111,9 @@ class DeepSystemCleaner:
                 entries = cursor.fetchall()
 
                 if entries:
-                    self.logger.warning(
-                        f"Found {len(entries)} TCC entries in {tcc_path}:"
-                    )
+                    self.logger.warning(f"Found {len(entries)} TCC entries in {tcc_path}:")
                     for service, client, auth_value in entries:
-                        self.logger.warning(
-                            f"  {service}: {client} (auth: {auth_value})"
-                        )
+                        self.logger.warning(f"  {service}: {client} (auth: {auth_value})")
 
                     if not self.dry_run:
                         # Remove all Zoom-related TCC entries
@@ -144,9 +140,7 @@ class DeepSystemCleaner:
                             except Exception:
                                 pass  # tccutil might not be available or might fail
                     else:
-                        self.logger.info(
-                            f"[DRY RUN] Would remove {len(entries)} TCC entries"
-                        )
+                        self.logger.info(f"[DRY RUN] Would remove {len(entries)} TCC entries")
                         cleared += len(entries)
 
                 conn.close()
@@ -195,16 +189,12 @@ class DeepSystemCleaner:
                                         capture_output=True,
                                         check=False,
                                     )
-                                    self.logger.info(
-                                        f"Killed Zoom process with PID: {pid}"
-                                    )
+                                    self.logger.info(f"Killed Zoom process with PID: {pid}")
                                     cleared += 1
                                 except Exception as e:
                                     self.logger.error(f"Failed to kill PID {pid}: {e}")
                             else:
-                                self.logger.info(
-                                    f"[DRY RUN] Would kill Zoom process PID: {pid}"
-                                )
+                                self.logger.info(f"[DRY RUN] Would kill Zoom process PID: {pid}")
                                 cleared += 1
 
         except Exception as e:
@@ -245,9 +235,7 @@ class DeepSystemCleaner:
                         "f",
                         "2>/dev/null",
                     ]
-                    result = subprocess.run(
-                        cmd, capture_output=True, text=True, shell=False
-                    )
+                    result = subprocess.run(cmd, capture_output=True, text=True, shell=False)
 
                     if result.returncode == 0 and result.stdout.strip():
                         files = result.stdout.strip().split("\n")
@@ -260,18 +248,12 @@ class DeepSystemCleaner:
                                             capture_output=True,
                                             check=True,
                                         )
-                                        self.logger.info(
-                                            f"Removed system temp file: {file_path}"
-                                        )
+                                        self.logger.info(f"Removed system temp file: {file_path}")
                                         cleaned += 1
                                     except Exception as e:
-                                        self.logger.error(
-                                            f"Failed to remove {file_path}: {e}"
-                                        )
+                                        self.logger.error(f"Failed to remove {file_path}: {e}")
                                 else:
-                                    self.logger.info(
-                                        f"[DRY RUN] Would remove: {file_path}"
-                                    )
+                                    self.logger.info(f"[DRY RUN] Would remove: {file_path}")
                                     cleaned += 1
 
             except Exception as e:
@@ -328,14 +310,10 @@ class DeepSystemCleaner:
                                 self.logger.info(f"Reset network config: {config_file}")
                                 reset_count += 1
                             else:
-                                self.logger.info(
-                                    f"[DRY RUN] Would reset: {config_file}"
-                                )
+                                self.logger.info(f"[DRY RUN] Would reset: {config_file}")
                                 reset_count += 1
                 except Exception as e:
-                    self.logger.error(
-                        f"Error checking network config {config_file}: {e}"
-                    )
+                    self.logger.error(f"Error checking network config {config_file}: {e}")
 
         return reset_count
 
@@ -388,9 +366,7 @@ class DeepSystemCleaner:
                                         f"Failed to remove AV config {file_path}: {e}"
                                     )
                             else:
-                                self.logger.info(
-                                    f"[DRY RUN] Would remove AV config: {file_path}"
-                                )
+                                self.logger.info(f"[DRY RUN] Would remove AV config: {file_path}")
                                 cleared += 1
 
             except Exception as e:
@@ -441,18 +417,14 @@ class DeepSystemCleaner:
                                         capture_output=True,
                                         check=True,
                                     )
-                                    self.logger.info(
-                                        f"Removed system identifier: {file_path}"
-                                    )
+                                    self.logger.info(f"Removed system identifier: {file_path}")
                                     cleared += 1
                                 except Exception as e:
                                     self.logger.error(
                                         f"Failed to remove identifier {file_path}: {e}"
                                     )
                             else:
-                                self.logger.info(
-                                    f"[DRY RUN] Would remove identifier: {file_path}"
-                                )
+                                self.logger.info(f"[DRY RUN] Would remove identifier: {file_path}")
                                 cleared += 1
 
             except Exception as e:
@@ -488,18 +460,14 @@ class DeepSystemCleaner:
                                             capture_output=True,
                                             check=True,
                                         )
-                                        self.logger.info(
-                                            f"Removed receipt: {file_path}"
-                                        )
+                                        self.logger.info(f"Removed receipt: {file_path}")
                                         removed += 1
                                     except Exception as e:
                                         self.logger.error(
                                             f"Failed to remove receipt {file_path}: {e}"
                                         )
                                 else:
-                                    self.logger.info(
-                                        f"[DRY RUN] Would remove receipt: {file_path}"
-                                    )
+                                    self.logger.info(f"[DRY RUN] Would remove receipt: {file_path}")
                                     removed += 1
 
             except Exception as e:
@@ -530,9 +498,7 @@ class DeepSystemCleaner:
                     line = line.strip()
 
                     if line.startswith("keychain:"):
-                        if current_entry and self._is_zoom_keychain_entry(
-                            current_entry
-                        ):
+                        if current_entry and self._is_zoom_keychain_entry(current_entry):
                             zoom_entries.append(current_entry)
                         current_entry = {"keychain": line}
                     elif "=" in line and current_entry:
@@ -544,9 +510,7 @@ class DeepSystemCleaner:
                     zoom_entries.append(current_entry)
 
                 if zoom_entries:
-                    self.logger.warning(
-                        f"Found {len(zoom_entries)} Zoom keychain entries"
-                    )
+                    self.logger.warning(f"Found {len(zoom_entries)} Zoom keychain entries")
 
                     for entry in zoom_entries:
                         service = entry.get('"svce"<blob>', "unknown")
@@ -566,18 +530,12 @@ class DeepSystemCleaner:
                                         "-D",
                                         "application password",
                                     ]
-                                    subprocess.run(
-                                        delete_cmd, capture_output=True, check=False
-                                    )
+                                    subprocess.run(delete_cmd, capture_output=True, check=False)
                                     cleared += 1
                             except Exception as e:
-                                self.logger.error(
-                                    f"Failed to delete keychain entry: {e}"
-                                )
+                                self.logger.error(f"Failed to delete keychain entry: {e}")
                         else:
-                            self.logger.info(
-                                f"[DRY RUN] Would remove keychain entry: {service}"
-                            )
+                            self.logger.info(f"[DRY RUN] Would remove keychain entry: {service}")
                             cleared += 1
 
         except Exception as e:
@@ -615,9 +573,7 @@ class DeepSystemCleaner:
                         if "zoom" in line.lower() and "IOUserClientCreator" in line
                     ]
                     if zoom_lines:
-                        self.logger.warning(
-                            f"Found {len(zoom_lines)} remaining IORegistry entries"
-                        )
+                        self.logger.warning(f"Found {len(zoom_lines)} remaining IORegistry entries")
                         return False
             except Exception as e:
                 self.logger.debug(f"IORegistry verification skipped: {e}")
@@ -642,9 +598,7 @@ class DeepSystemCleaner:
                             timeout=30,
                         )
                         if result.stdout.strip():
-                            self.logger.warning(
-                                f"Found remaining temp files in {temp_dir}"
-                            )
+                            self.logger.warning(f"Found remaining temp files in {temp_dir}")
                             return False
                     except Exception as e:
                         self.logger.debug(f"Temp verification error in {temp_dir}: {e}")
@@ -738,18 +692,12 @@ class DeepSystemCleaner:
                                         capture_output=True,
                                         check=True,
                                     )
-                                    self.logger.info(
-                                        f"Removed kernel extension: {ext_path}"
-                                    )
+                                    self.logger.info(f"Removed kernel extension: {ext_path}")
                                     cleared += 1
                                 except Exception as e:
-                                    self.logger.error(
-                                        f"Failed to remove extension {ext_path}: {e}"
-                                    )
+                                    self.logger.error(f"Failed to remove extension {ext_path}: {e}")
                             else:
-                                self.logger.info(
-                                    f"[DRY RUN] Would remove extension: {ext_path}"
-                                )
+                                self.logger.info(f"[DRY RUN] Would remove extension: {ext_path}")
                                 cleared += 1
 
             except Exception as e:
@@ -757,78 +705,3 @@ class DeepSystemCleaner:
 
         return cleared
 
-    def generate_deep_cleanup_report(self) -> Dict[str, any]:
-        """Generate a detailed report of deep system artifacts found"""
-        return {
-            "ioreg_zoom_entries": self.ioreg_zoom_entries,
-            "deep_artifacts_found": self.deep_artifacts_found,
-            "cleanup_timestamp": time.time(),
-            "system_info": {
-                "platform": sys.platform,
-                "python_version": sys.version,
-                "user": os.getenv("USER", "unknown"),
-            },
-        }
-
-    def verify_deep_cleanup(self) -> bool:
-        """Verify that deep system cleanup was successful"""
-        verification_passed = True
-
-        # Check if IORegistry still contains Zoom entries
-        try:
-            result = subprocess.run(["ioreg", "-l"], capture_output=True, text=True)
-            if result.returncode == 0:
-                zoom_lines = [
-                    line
-                    for line in result.stdout.split("\n")
-                    if "zoom.us" in line or "ZoomClips" in line
-                ]
-
-                if zoom_lines:
-                    self.logger.warning(
-                        "IORegistry still contains Zoom entries after cleanup:"
-                    )
-                    for line in zoom_lines:
-                        self.logger.warning(f"  {line.strip()}")
-                    verification_passed = False
-                else:
-                    self.logger.info(
-                        "✅ IORegistry verification passed - no Zoom entries found"
-                    )
-
-        except Exception as e:
-            self.logger.error(f"Error during IORegistry verification: {e}")
-            verification_passed = False
-
-        # Check for remaining system temp files
-        try:
-            result = subprocess.run(
-                [
-                    "sudo",
-                    "find",
-                    "/private/var/folders",
-                    "-name",
-                    "*zoom*",
-                    "-o",
-                    "-name",
-                    "*Zoom*",
-                ],
-                capture_output=True,
-                text=True,
-            )
-
-            if result.returncode == 0 and result.stdout.strip():
-                remaining_files = result.stdout.strip().split("\n")
-                self.logger.warning(
-                    f"Found {len(remaining_files)} remaining Zoom temp files"
-                )
-                verification_passed = False
-            else:
-                self.logger.info(
-                    "✅ System temp verification passed - no Zoom files found"
-                )
-
-        except Exception as e:
-            self.logger.error(f"Error during temp file verification: {e}")
-
-        return verification_passed

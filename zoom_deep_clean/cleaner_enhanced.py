@@ -145,9 +145,7 @@ class ZoomDeepCleanerEnhanced:
 
         for dangerous in dangerous_paths:
             if resolved.startswith(dangerous):
-                raise SecurityError(
-                    f"Access to critical system path denied: {resolved}"
-                )
+                raise SecurityError(f"Access to critical system path denied: {resolved}")
 
         return resolved
 
@@ -213,9 +211,7 @@ class ZoomDeepCleanerEnhanced:
             self.advanced_features.logger = self.logger
 
         # Initialize deep system cleaner
-        self.deep_system_cleaner = DeepSystemCleaner(
-            logger=self.logger, dry_run=self.dry_run
-        )
+        self.deep_system_cleaner = DeepSystemCleaner(logger=self.logger, dry_run=self.dry_run)
 
     def _validate_environment(self) -> None:
         """Validate that we're running on macOS with proper permissions"""
@@ -249,9 +245,7 @@ class ZoomDeepCleanerEnhanced:
 
             # Check if current macOS version is supported
             if not compatibility_manager.is_supported_version():
-                self.logger.warning(
-                    "Running on unsupported macOS version - proceed with caution"
-                )
+                self.logger.warning("Running on unsupported macOS version - proceed with caution")
 
             # Check feature compatibility
             critical_features = [
@@ -281,8 +275,7 @@ class ZoomDeepCleanerEnhanced:
 
             # Basic validation - no shell metacharacters
             if any(
-                char in arg
-                for char in ["|", "&", ";", "`", "$", "(", ")", "<", ">", "\n", "\r"]
+                char in arg for char in ["|", "&", ";", "`", "$", "(", ")", "<", ">", "\n", "\r"]
             ):
                 raise SecurityError(f"Unsafe characters in command argument: {arg}")
 
@@ -353,10 +346,7 @@ class ZoomDeepCleanerEnhanced:
     def _simulate_security_commands(self, cmd_args: List[str]) -> Tuple[bool, str]:
         """Simulate security/keychain commands for dry-run"""
         if "security" in cmd_args:
-            if (
-                "find-generic-password" in cmd_args
-                or "find-internet-password" in cmd_args
-            ):
+            if "find-generic-password" in cmd_args or "find-internet-password" in cmd_args:
                 return (
                     False,
                     "security: SecKeychainSearchCopyNext: The specified item could not be found in the keychain.",
@@ -373,9 +363,7 @@ class ZoomDeepCleanerEnhanced:
             )
         return None, ""
 
-    def _simulate_dry_run_output(
-        self, cmd_args: List[str], description: str
-    ) -> Tuple[bool, str]:
+    def _simulate_dry_run_output(self, cmd_args: List[str], description: str) -> Tuple[bool, str]:
         """Simulate realistic command output for dry-run mode"""
         # Try each command type simulator
         simulators = [
@@ -429,9 +417,7 @@ class ZoomDeepCleanerEnhanced:
 
         # Convert string commands to list for security
         if isinstance(cmd_args, str):
-            self.logger.warning(
-                f"String command converted to list for security: {cmd_args}"
-            )
+            self.logger.warning(f"String command converted to list for security: {cmd_args}")
             cmd_args = cmd_args.split()
 
         # Sanitize arguments
@@ -495,17 +481,13 @@ class ZoomDeepCleanerEnhanced:
                     if result.stderr
                     else f"Command failed with code {result.returncode}"
                 )
-                self.logger.warning(
-                    f"Command failed: {' '.join(cmd_args)} - {error_msg}"
-                )
+                self.logger.warning(f"Command failed: {' '.join(cmd_args)} - {error_msg}")
                 self.cleanup_stats["warnings"] += 1
                 return False, error_msg
 
         except subprocess.TimeoutExpired:
             timeout_msg = f"Command timed out after {timeout} seconds"
-            self.logger.error(
-                f"Command timed out after {timeout}s: {' '.join(cmd_args)}"
-            )
+            self.logger.error(f"Command timed out after {timeout}s: {' '.join(cmd_args)}")
             self.cleanup_stats["errors"] += 1
             return False, timeout_msg
         except Exception as e:
@@ -571,9 +553,7 @@ class ZoomDeepCleanerEnhanced:
 
         if success and output.strip():
             remaining_processes = output.strip().split("\n")
-            self.logger.warning(
-                f"Found {len(remaining_processes)} remaining Zoom processes:"
-            )
+            self.logger.warning(f"Found {len(remaining_processes)} remaining Zoom processes:")
             for pid in remaining_processes:
                 # Get process details
                 proc_success, proc_info = self._run_command(
@@ -640,18 +620,14 @@ class ZoomDeepCleanerEnhanced:
 
         # Individual process cleanup
         for process in zoom_processes:
-            success, _ = self._run_command(
-                ["pkill", "-f", process], f"Stopping {process}"
-            )
+            success, _ = self._run_command(["pkill", "-f", process], f"Stopping {process}")
             if success:
                 self.cleanup_stats["processes_killed"] += 1
 
         # Extended grace period for VM environments
         if not self.dry_run:
             grace_period = 5 if self.vm_aware else 2
-            self.logger.info(
-                f"⏳ Waiting {grace_period}s for processes to terminate gracefully..."
-            )
+            self.logger.info(f"⏳ Waiting {grace_period}s for processes to terminate gracefully...")
             time.sleep(grace_period)
 
         # Force kill with enhanced patterns
@@ -758,9 +734,7 @@ class ZoomDeepCleanerEnhanced:
                 self.logger.info(f"🔥 Securely shredded: {description or file_path}")
                 return True
             else:
-                self.logger.warning(
-                    f"gshred failed for {file_path}, falling back to rm"
-                )
+                self.logger.warning(f"gshred failed for {file_path}, falling back to rm")
 
         # Fallback to regular removal
         try:
@@ -825,17 +799,13 @@ class ZoomDeepCleanerEnhanced:
 
         # Create backup before removal
         if not self._backup_path(validated_path):
-            self.logger.warning(
-                f"Backup failed for {validated_path}, proceeding with removal"
-            )
+            self.logger.warning(f"Backup failed for {validated_path}, proceeding with removal")
 
         try:
             if os.path.isdir(validated_path):
                 shutil.rmtree(validated_path)
                 self.cleanup_stats["directories_removed"] += 1
-                self.logger.info(
-                    f"✅ Removed directory: {description or validated_path}"
-                )
+                self.logger.info(f"✅ Removed directory: {description or validated_path}")
             elif os.path.isfile(validated_path):
                 if secure_shred:
                     # Use secure shredding for sensitive files
@@ -849,9 +819,7 @@ class ZoomDeepCleanerEnhanced:
                     # Standard removal
                     os.remove(validated_path)
                     self.cleanup_stats["files_removed"] += 1
-                    self.logger.info(
-                        f"✅ Removed file: {description or validated_path}"
-                    )
+                    self.logger.info(f"✅ Removed file: {description or validated_path}")
             else:
                 self.logger.warning(
                     f"Path exists but is neither file nor directory: {validated_path}"
@@ -1007,9 +975,7 @@ class ZoomDeepCleanerEnhanced:
         ]
 
         for container in group_containers:
-            self._remove_path(
-                container, f"Group container: {os.path.basename(container)}"
-            )
+            self._remove_path(container, f"Group container: {os.path.basename(container)}")
 
     def remove_zoom_applications(self) -> None:
         """Remove main Zoom applications from /Applications"""
@@ -1031,9 +997,7 @@ class ZoomDeepCleanerEnhanced:
         for app_path in zoom_app_paths:
             if os.path.exists(app_path):
                 self.logger.info(f"🎯 Found Zoom application: {app_path}")
-                self._remove_path(
-                    app_path, f"Zoom application: {os.path.basename(app_path)}"
-                )
+                self._remove_path(app_path, f"Zoom application: {os.path.basename(app_path)}")
                 apps_found += 1
             else:
                 self.logger.debug(f"Zoom application not found: {app_path}")
@@ -1053,9 +1017,7 @@ class ZoomDeepCleanerEnhanced:
                         app_path = f"/Applications/{item}"
                         # Skip if already processed above
                         if app_path not in zoom_app_paths:
-                            self.logger.info(
-                                f"🎯 Found additional Zoom application: {app_path}"
-                            )
+                            self.logger.info(f"🎯 Found additional Zoom application: {app_path}")
                             self._remove_path(app_path, f"Additional Zoom app: {item}")
                             apps_found += 1
         except PermissionError:
@@ -1089,9 +1051,7 @@ class ZoomDeepCleanerEnhanced:
                 secure_shred=True,  # Use secure shredding
             )
             if success:
-                self.logger.info(
-                    "✅ Encrypted database securely destroyed and replaced"
-                )
+                self.logger.info("✅ Encrypted database securely destroyed and replaced")
                 self.cleanup_stats["encrypted_databases_shredded"] += 1
             else:
                 self.logger.error("❌ Failed to destroy encrypted database")
@@ -1113,9 +1073,7 @@ class ZoomDeepCleanerEnhanced:
                         files = output.strip().split("\n")
                         for file_path in files:
                             if file_path.strip():
-                                self.logger.info(
-                                    f"🎯 Found fingerprint file: {file_path}"
-                                )
+                                self.logger.info(f"🎯 Found fingerprint file: {file_path}")
                                 success = self._remove_path(
                                     file_path.strip(),
                                     f"Fingerprint file: {os.path.basename(file_path)}",
@@ -1123,9 +1081,7 @@ class ZoomDeepCleanerEnhanced:
                                     secure_shred=True,
                                 )
                                 if success:
-                                    self.cleanup_stats[
-                                        "fingerprint_files_shredded"
-                                    ] += 1
+                                    self.cleanup_stats["fingerprint_files_shredded"] += 1
             except Exception as e:
                 self.logger.error(f"Error scanning Zoom data directory: {e}")
 
@@ -1225,9 +1181,7 @@ class ZoomDeepCleanerEnhanced:
             self.logger.info(f"🔍 Detected Wi-Fi interface: {wifi_interface}")
 
             # Turn Wi-Fi off and on (ZoomFixer technique)
-            self.logger.info(
-                "📡 Cycling Wi-Fi interface to reset network fingerprint..."
-            )
+            self.logger.info("📡 Cycling Wi-Fi interface to reset network fingerprint...")
 
             # Turn Wi-Fi off
             success1, _ = self._run_command(
@@ -1247,9 +1201,7 @@ class ZoomDeepCleanerEnhanced:
 
                 if success2:
                     self.logger.info("✅ Wi-Fi interface reset completed")
-                    self.logger.info(
-                        "💡 Note: You may need to reconnect to your Wi-Fi network"
-                    )
+                    self.logger.info("💡 Note: You may need to reconnect to your Wi-Fi network")
                     self.cleanup_stats["network_interfaces_reset"] += 1
                     self.cleanup_stats["wifi_cycles_completed"] += 1
                 else:
@@ -1311,9 +1263,7 @@ class ZoomDeepCleanerEnhanced:
         self.logger.info("🎭 Attempting MAC address spoofing (ZoomFixer technique)...")
 
         # Check if spoof-mac tool is available
-        success, _ = self._run_command(
-            ["which", "spoof-mac"], "Checking for spoof-mac tool"
-        )
+        success, _ = self._run_command(["which", "spoof-mac"], "Checking for spoof-mac tool")
 
         if success:
             # Use spoof-mac to randomize MAC address on en0
@@ -1352,9 +1302,7 @@ class ZoomDeepCleanerEnhanced:
 
     def comprehensive_file_search(self) -> List[str]:
         """Perform comprehensive search for remaining Zoom files"""
-        self.logger.info(
-            "🔍 Performing comprehensive search for remaining Zoom files..."
-        )
+        self.logger.info("🔍 Performing comprehensive search for remaining Zoom files...")
 
         remaining_files = []
         search_locations = [
@@ -1367,9 +1315,7 @@ class ZoomDeepCleanerEnhanced:
         # Add user directories to search locations
         try:
             user_dirs = [
-                d
-                for d in os.listdir("/Users")
-                if os.path.isdir(os.path.join("/Users", d))
+                d for d in os.listdir("/Users") if os.path.isdir(os.path.join("/Users", d))
             ]
             for user in user_dirs:
                 search_locations.append(f"/Users/{user}")
@@ -1417,9 +1363,7 @@ class ZoomDeepCleanerEnhanced:
 
                 if result.stdout.strip():
                     found_files = [
-                        f.strip()
-                        for f in result.stdout.strip().split("\n")
-                        if f.strip()
+                        f.strip() for f in result.stdout.strip().split("\n") if f.strip()
                     ]
                     remaining_files.extend(found_files)
                     self.cleanup_stats["remaining_files_found"] += len(found_files)
@@ -1465,21 +1409,15 @@ class ZoomDeepCleanerEnhanced:
             self.logger.info("=" * 60)
             uuid_results = self.advanced_features.detect_system_uuids()
             advanced_results["uuid_detection"] = uuid_results
-            self.cleanup_stats["system_identifiers_detected"] = uuid_results[
-                "total_identifiers"
-            ]
+            self.cleanup_stats["system_identifiers_detected"] = uuid_results["total_identifiers"]
             self.cleanup_stats["advanced_features_executed"] += 1
 
             # 4. Hostname Reset (if enabled)
             if self.reset_hostname:
                 self.logger.info("=" * 60)
-                hostname_results = self.advanced_features.reset_hostname(
-                    self.new_hostname
-                )
+                hostname_results = self.advanced_features.reset_hostname(self.new_hostname)
                 advanced_results["hostname_reset"] = hostname_results
-                self.cleanup_stats["hostname_reset_success"] = hostname_results[
-                    "success"
-                ]
+                self.cleanup_stats["hostname_reset_success"] = hostname_results["success"]
                 self.cleanup_stats["advanced_features_executed"] += 1
 
             # 5. MAC Address Spoofing (if enabled)
@@ -1549,9 +1487,7 @@ class ZoomDeepCleanerEnhanced:
 
         try:
             time.sleep(10)
-            self._run_command(
-                ["shutdown", "-r", "now"], "Rebooting system", require_sudo=True
-            )
+            self._run_command(["shutdown", "-r", "now"], "Rebooting system", require_sudo=True)
         except KeyboardInterrupt:
             self.logger.info("System reboot cancelled by user")
 
@@ -1601,28 +1537,18 @@ class ZoomDeepCleanerEnhanced:
                     [
                         op
                         for op in self.dry_run_operations
-                        if any(
-                            cmd in str(op["command"])
-                            for cmd in ["pkill", "kill", "pgrep"]
-                        )
+                        if any(cmd in str(op["command"]) for cmd in ["pkill", "kill", "pgrep"])
                     ]
                 ),
                 "file_operations": len(
                     [
                         op
                         for op in self.dry_run_operations
-                        if any(
-                            cmd in str(op["command"])
-                            for cmd in ["find", "rm", "delete"]
-                        )
+                        if any(cmd in str(op["command"]) for cmd in ["find", "rm", "delete"])
                     ]
                 ),
                 "security_operations": len(
-                    [
-                        op
-                        for op in self.dry_run_operations
-                        if "security" in str(op["command"])
-                    ]
+                    [op for op in self.dry_run_operations if "security" in str(op["command"])]
                 ),
                 "system_operations": len(
                     [
@@ -1699,9 +1625,7 @@ class ZoomDeepCleanerEnhanced:
             self.remove_zoom_applications()  # NEW: Remove main Zoom apps from /Applications
 
             # Comprehensive authentication token cleanup (CRITICAL for login issues)
-            self.logger.info(
-                "🔐 Starting comprehensive authentication token cleanup..."
-            )
+            self.logger.info("🔐 Starting comprehensive authentication token cleanup...")
             auth_cleaner = AuthTokenCleaner(verbose=self.verbose, dry_run=self.dry_run)
             auth_cleanup_results = auth_cleaner.clean_all_auth_tokens()
 
@@ -1718,9 +1642,7 @@ class ZoomDeepCleanerEnhanced:
 
             # Execute deep system cleanup (addresses "login works but can't join meetings" issue)
             self.logger.info("🔍 Starting deep system artifact cleanup...")
-            deep_cleanup_results = (
-                self.deep_system_cleaner.clean_deep_system_artifacts()
-            )
+            deep_cleanup_results = self.deep_system_cleaner.clean_deep_system_artifacts()
 
             # Update cleanup stats with deep cleanup results
             for key, value in deep_cleanup_results.items():
@@ -1744,22 +1666,16 @@ class ZoomDeepCleanerEnhanced:
             # Perform comprehensive search for remaining files
             remaining_files = self.comprehensive_file_search()
             if remaining_files:
-                self.logger.warning(
-                    f"⚠️ Found {len(remaining_files)} remaining Zoom files:"
-                )
+                self.logger.warning(f"⚠️ Found {len(remaining_files)} remaining Zoom files:")
                 for file_path in remaining_files[:10]:  # Show first 10
                     self.logger.warning(f"   📄 {file_path}")
                 if len(remaining_files) > 10:
-                    self.logger.warning(
-                        f"   ... and {len(remaining_files) - 10} more files"
-                    )
+                    self.logger.warning(f"   ... and {len(remaining_files) - 10} more files")
 
             self.show_hardware_info()
 
             # Perform comprehensive device fingerprint verification
-            self.logger.info(
-                "🔍 Starting comprehensive device fingerprint verification..."
-            )
+            self.logger.info("🔍 Starting comprehensive device fingerprint verification...")
             fingerprint_verifier = DeviceFingerprintVerifier(verbose=self.verbose)
             verification_report = fingerprint_verifier.verify_complete_cleanup()
 
@@ -1779,19 +1695,13 @@ class ZoomDeepCleanerEnhanced:
 
             # Final summary
             self.logger.info("=" * 80)
-            self.logger.info(
-                "🎉 ENHANCED DEEP CLEAN COMPLETE - With ZoomFixer Techniques!"
-            )
+            self.logger.info("🎉 ENHANCED DEEP CLEAN COMPLETE - With ZoomFixer Techniques!")
             self.logger.info(f"📊 Statistics:")
-            self.logger.info(
-                f"   • Files removed: {self.cleanup_stats['files_removed']}"
-            )
+            self.logger.info(f"   • Files removed: {self.cleanup_stats['files_removed']}")
             self.logger.info(
                 f"   • Directories removed: {self.cleanup_stats['directories_removed']}"
             )
-            self.logger.info(
-                f"   • Processes killed: {self.cleanup_stats['processes_killed']}"
-            )
+            self.logger.info(f"   • Processes killed: {self.cleanup_stats['processes_killed']}")
             self.logger.info(
                 f"   • VM services stopped: {self.cleanup_stats['vm_services_stopped']}"
             )
@@ -1801,9 +1711,7 @@ class ZoomDeepCleanerEnhanced:
             self.logger.info(
                 f"   • System locations cleaned: {self.cleanup_stats['system_locations_cleaned']}"
             )
-            self.logger.info(
-                f"   • Files backed up: {self.cleanup_stats['files_backed_up']}"
-            )
+            self.logger.info(f"   • Files backed up: {self.cleanup_stats['files_backed_up']}")
             self.logger.info(
                 f"   • Remaining files found: {self.cleanup_stats['remaining_files_found']}"
             )
@@ -1862,9 +1770,7 @@ class ZoomDeepCleanerEnhanced:
             auth_errors = len(auth_cleanup_results.get("errors", []))
             auth_success = auth_cleanup_results.get("success", False)
 
-            self.logger.info(
-                f"   • Authentication tokens cleaned: {auth_items_cleaned}"
-            )
+            self.logger.info(f"   • Authentication tokens cleaned: {auth_items_cleaned}")
             self.logger.info(f"   • Authentication cleanup errors: {auth_errors}")
             self.logger.info(
                 f"   • Authentication cleanup success: {'✅ YES' if auth_success else '❌ NO'}"
@@ -1887,9 +1793,7 @@ class ZoomDeepCleanerEnhanced:
                 "remaining_items_count", 0
             )
 
-            self.logger.info(
-                f"   • Device ready for Zoom: {'✅ YES' if device_ready else '❌ NO'}"
-            )
+            self.logger.info(f"   • Device ready for Zoom: {'✅ YES' if device_ready else '❌ NO'}")
             self.logger.info(f"   • Additional items cleaned: {items_cleaned}")
             self.logger.info(f"   • Items still remaining: {items_remaining}")
 
@@ -1941,8 +1845,7 @@ class ZoomDeepCleanerEnhanced:
 
             # Return success only if no errors AND no security violations
             return (
-                self.cleanup_stats["errors"] == 0
-                and self.cleanup_stats["security_violations"] == 0
+                self.cleanup_stats["errors"] == 0 and self.cleanup_stats["security_violations"] == 0
             )
 
         except KeyboardInterrupt:

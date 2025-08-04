@@ -35,9 +35,7 @@ class DeviceFingerprintVerifier:
         logger = logging.getLogger("DeviceFingerprintVerifier")
         if not logger.handlers:
             handler = logging.StreamHandler()
-            formatter = logging.Formatter(
-                "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-            )
+            formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             handler.setFormatter(formatter)
             logger.addHandler(handler)
 
@@ -162,9 +160,7 @@ class DeviceFingerprintVerifier:
         self.logger.info("Checking for running Zoom processes...")
 
         try:
-            result = subprocess.run(
-                ["ps", "aux"], capture_output=True, text=True, timeout=10
-            )
+            result = subprocess.run(["ps", "aux"], capture_output=True, text=True, timeout=10)
             zoom_processes = []
             for line in result.stdout.split("\n"):
                 if any(term in line.lower() for term in ["zoom", "us.zoom"]):
@@ -187,9 +183,7 @@ class DeviceFingerprintVerifier:
 
         # Clear DNS cache
         try:
-            subprocess.run(
-                ["sudo", "dscacheutil", "-flushcache"], capture_output=True, timeout=10
-            )
+            subprocess.run(["sudo", "dscacheutil", "-flushcache"], capture_output=True, timeout=10)
             subprocess.run(
                 ["sudo", "killall", "-HUP", "mDNSResponder"],
                 capture_output=True,
@@ -377,9 +371,7 @@ class DeviceFingerprintVerifier:
                         browser_data = result.stdout.strip().split("\n")
                         # Filter out legitimate Safari zoom preferences
                         zoom_data = [
-                            item
-                            for item in browser_data
-                            if "PerSiteZoomPreferences" not in item
+                            item for item in browser_data if "PerSiteZoomPreferences" not in item
                         ]
                         found_browser_data.extend(zoom_data)
                 except subprocess.SubprocessError:
@@ -464,10 +456,7 @@ class DeviceFingerprintVerifier:
         for file in files:
             if any(pattern in file for pattern in exclude_patterns):
                 continue
-            if any(
-                zoom_term in file.lower()
-                for zoom_term in ["zoom.us", "us.zoom", "zoomfixer"]
-            ):
+            if any(zoom_term in file.lower() for zoom_term in ["zoom.us", "us.zoom", "zoomfixer"]):
                 zoom_files.append(file)
 
         return zoom_files
@@ -505,13 +494,9 @@ class DeviceFingerprintVerifier:
             try:
                 if os.path.exists(item):
                     if os.path.isdir(item):
-                        subprocess.run(
-                            ["rm", "-rf", item], capture_output=True, timeout=10
-                        )
+                        subprocess.run(["rm", "-rf", item], capture_output=True, timeout=10)
                     else:
-                        subprocess.run(
-                            ["rm", "-f", item], capture_output=True, timeout=10
-                        )
+                        subprocess.run(["rm", "-f", item], capture_output=True, timeout=10)
 
                     if not os.path.exists(item):
                         self.verification_results["cleaned_items"].append(item)
@@ -580,9 +565,7 @@ class DeviceFingerprintVerifier:
                 "status": self.verification_results["status"],
                 "device_ready_for_zoom": self.verification_results["device_ready"],
                 "total_items_cleaned": len(self.verification_results["cleaned_items"]),
-                "remaining_items_count": len(
-                    self.verification_results["remaining_items"]
-                ),
+                "remaining_items_count": len(self.verification_results["remaining_items"]),
                 "findings_count": len(self.verification_results["findings"]),
             },
             "system_information": system_info,
@@ -592,10 +575,7 @@ class DeviceFingerprintVerifier:
                 "informational_findings": self.verification_results["findings"],
             },
             "device_fingerprint_status": {
-                "application_data_removed": len(
-                    self.verification_results["remaining_items"]
-                )
-                == 0,
+                "application_data_removed": len(self.verification_results["remaining_items"]) == 0,
                 "network_cache_cleared": True,
                 "metadata_cleaned": True,
                 "ready_for_fresh_install": self.verification_results["device_ready"],
@@ -604,9 +584,7 @@ class DeviceFingerprintVerifier:
         }
 
         # Save report to file
-        report_path = os.path.expanduser(
-            "~/Documents/zoom_device_verification_report.json"
-        )
+        report_path = os.path.expanduser("~/Documents/zoom_device_verification_report.json")
         try:
             with open(report_path, "w") as f:
                 json.dump(report, f, indent=2)
@@ -637,9 +615,7 @@ class DeviceFingerprintVerifier:
                         system_info["hardware_uuid"] = line.split(":")[-1].strip()
 
             # Get network interfaces
-            result = subprocess.run(
-                ["ifconfig"], capture_output=True, text=True, timeout=10
-            )
+            result = subprocess.run(["ifconfig"], capture_output=True, text=True, timeout=10)
             if result.stdout:
                 mac_addresses = re.findall(r"ether ([a-f0-9:]{17})", result.stdout)
                 system_info["mac_addresses"] = mac_addresses
@@ -690,12 +666,8 @@ def main():
     """Main function for standalone execution"""
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Verify complete Zoom device fingerprint cleanup"
-    )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose output"
-    )
+    parser = argparse.ArgumentParser(description="Verify complete Zoom device fingerprint cleanup")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
     parser.add_argument(
         "--report-only",
         action="store_true",
@@ -731,9 +703,7 @@ def main():
         print("\n⚠️  WARNING: Additional cleanup may be required.")
         print("   Review the detailed report for remaining items.")
 
-    print(
-        f"\n📄 Detailed report saved to: ~/Documents/zoom_device_verification_report.json"
-    )
+    print(f"\n📄 Detailed report saved to: ~/Documents/zoom_device_verification_report.json")
     print("=" * 60)
 
 

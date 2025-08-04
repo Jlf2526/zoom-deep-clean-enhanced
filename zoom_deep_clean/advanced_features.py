@@ -87,20 +87,14 @@ class AdvancedFeatures:
                     if result.stderr
                     else f"Command failed with code {result.returncode}"
                 )
-                self.logger.warning(
-                    f"Advanced command failed: {' '.join(cmd_args)} - {error_msg}"
-                )
+                self.logger.warning(f"Advanced command failed: {' '.join(cmd_args)} - {error_msg}")
                 return False, error_msg
 
         except subprocess.TimeoutExpired:
-            self.logger.error(
-                f"Advanced command timed out after {timeout}s: {' '.join(cmd_args)}"
-            )
+            self.logger.error(f"Advanced command timed out after {timeout}s: {' '.join(cmd_args)}")
             return False, f"Command timed out after {timeout}s"
         except Exception as e:
-            self.logger.error(
-                f"Exception in advanced command {' '.join(cmd_args)}: {e}"
-            )
+            self.logger.error(f"Exception in advanced command {' '.join(cmd_args)}: {e}")
             return False, str(e)
 
     def scan_keychain_comprehensive(self) -> Dict[str, Any]:
@@ -130,26 +124,16 @@ class AdvancedFeatures:
                     # Parse keychain entry attributes
                     if line.startswith("keychain:"):
                         if current_entry:
-                            self._process_keychain_entry(
-                                current_entry, keychain_results
-                            )
+                            self._process_keychain_entry(current_entry, keychain_results)
                         current_entry = {"keychain": line.split(":", 1)[1].strip()}
                     elif line.startswith('"acct"<blob>='):
-                        current_entry["account"] = (
-                            line.split("=", 1)[1].strip().strip('"')
-                        )
+                        current_entry["account"] = line.split("=", 1)[1].strip().strip('"')
                     elif line.startswith('"svce"<blob>='):
-                        current_entry["service"] = (
-                            line.split("=", 1)[1].strip().strip('"')
-                        )
+                        current_entry["service"] = line.split("=", 1)[1].strip().strip('"')
                     elif line.startswith('"desc"<blob>='):
-                        current_entry["description"] = (
-                            line.split("=", 1)[1].strip().strip('"')
-                        )
+                        current_entry["description"] = line.split("=", 1)[1].strip().strip('"')
                     elif line.startswith('"srvr"<blob>='):
-                        current_entry["server"] = (
-                            line.split("=", 1)[1].strip().strip('"')
-                        )
+                        current_entry["server"] = line.split("=", 1)[1].strip().strip('"')
 
                 # Process last entry
                 if current_entry:
@@ -205,9 +189,7 @@ class AdvancedFeatures:
 
         return keychain_results
 
-    def _process_keychain_entry(
-        self, entry: Dict[str, str], results: Dict[str, Any]
-    ) -> None:
+    def _process_keychain_entry(self, entry: Dict[str, str], results: Dict[str, Any]) -> None:
         """Process individual keychain entry for Zoom-related content"""
         results["total_entries_scanned"] += 1
 
@@ -238,9 +220,7 @@ class AdvancedFeatures:
 
         try:
             # List all profiles
-            success, output = self._run_command(
-                ["profiles", "list"], "Detecting MDM profiles"
-            )
+            success, output = self._run_command(["profiles", "list"], "Detecting MDM profiles")
 
             if success:
                 lines = output.split("\n")
@@ -271,13 +251,9 @@ class AdvancedFeatures:
                         mdm_results["total_profiles"] += 1
 
                         # Check if Zoom-related
-                        profile_text = " ".join(
-                            str(v).lower() for v in current_profile.values()
-                        )
+                        profile_text = " ".join(str(v).lower() for v in current_profile.values())
                         if "zoom" in profile_text:
-                            mdm_results["zoom_related_profiles"].append(
-                                current_profile.copy()
-                            )
+                            mdm_results["zoom_related_profiles"].append(current_profile.copy())
 
                         current_profile = {}
 
@@ -339,7 +315,9 @@ class AdvancedFeatures:
                     "Station",
                     "Terminal",
                 ]
-                new_hostname = f"{random.choice(adjectives)}-{random.choice(nouns)}-{random.randint(100, 999)}"
+                new_hostname = (
+                    f"{random.choice(adjectives)}-{random.choice(nouns)}-{random.randint(100, 999)}"
+                )
 
             hostname_results["new_hostname"] = new_hostname
 
@@ -422,9 +400,7 @@ class AdvancedFeatures:
 
         try:
             # Get network interfaces
-            success, output = self._run_command(
-                ["ifconfig"], "Scanning network interfaces"
-            )
+            success, output = self._run_command(["ifconfig"], "Scanning network interfaces")
 
             if success:
                 interfaces = []
@@ -493,9 +469,7 @@ class AdvancedFeatures:
                                     f"✅ MAC spoofed for {interface}: {mac_results['original_macs'][interface]} → {new_mac}"
                                 )
                             else:
-                                self.logger.error(
-                                    f"❌ MAC spoofing failed for {interface}"
-                                )
+                                self.logger.error(f"❌ MAC spoofing failed for {interface}")
                         else:
                             mac_results["interfaces_spoofed"].append(interface)
                             self.logger.info(
@@ -566,9 +540,7 @@ class AdvancedFeatures:
 
                     elif '"model"' in line:
                         model = line.split("=")[1].strip().strip('"')
-                        uuid_results["identifiers_found"].append(
-                            {"type": "Model", "value": model}
-                        )
+                        uuid_results["identifiers_found"].append({"type": "Model", "value": model})
 
             # Get additional system information
             success, output = self._run_command(
@@ -596,9 +568,7 @@ class AdvancedFeatures:
 
             uuid_results["total_identifiers"] = len(uuid_results["identifiers_found"])
             self.advanced_stats["uuid_detected"] = uuid_results["total_identifiers"] > 0
-            self.advanced_stats["system_identifiers_found"] = uuid_results[
-                "total_identifiers"
-            ]
+            self.advanced_stats["system_identifiers_found"] = uuid_results["total_identifiers"]
 
             self.logger.info(
                 f"✅ System identifier detection complete: {uuid_results['total_identifiers']} identifiers found"

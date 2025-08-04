@@ -53,9 +53,7 @@ class SecurityValidator:
         try:
             # Check if running with appropriate privileges
             if os.geteuid() == 0:
-                self.logger.warning(
-                    "Running as root - enhanced security checks enabled"
-                )
+                self.logger.warning("Running as root - enhanced security checks enabled")
 
             # Validate system integrity
             if not self._check_system_integrity():
@@ -151,9 +149,7 @@ class SecurityValidator:
         """Check system integrity before operations"""
         try:
             # Check if SIP is enabled (recommended)
-            result = subprocess.run(
-                ["csrutil", "status"], capture_output=True, text=True
-            )
+            result = subprocess.run(["csrutil", "status"], capture_output=True, text=True)
             if result.returncode == 0:
                 if "enabled" in result.stdout.lower():
                     self.logger.info("System Integrity Protection is enabled (good)")
@@ -200,9 +196,7 @@ class SecurityValidator:
         ).hexdigest()
         return signature
 
-    def verify_operation_signature(
-        self, operation: str, path: str, signature: str
-    ) -> bool:
+    def verify_operation_signature(self, operation: str, path: str, signature: str) -> bool:
         """Verify operation signature"""
         expected = self.generate_operation_signature(operation, path)
         return hmac.compare_digest(expected, signature)

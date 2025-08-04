@@ -1,22 +1,19 @@
 #!/usr/bin/env python3
 """
 Zoom Installer Module - Built-in modules only version
-Automated download and installation of fresh Zoom copy using only Python standard library
+Automated download and installation of fresh Zoom copy using only Python
+standard library
 """
 
 import os
-import sys
 import subprocess
 import tempfile
 import logging
-import hashlib
 import time
 import urllib.request
 import urllib.error
 import ssl
-from pathlib import Path
-from typing import Optional, Dict, Tuple
-import json
+from typing import Optional, Dict
 
 
 class ZoomInstaller:
@@ -25,7 +22,9 @@ class ZoomInstaller:
     # Official Zoom download URLs
     ZOOM_URLS = {
         "client": "https://zoom.us/client/latest/ZoomInstaller.pkg",
-        "client_alt": "https://d11yldzmag5yn.cloudfront.net/prod/5.17.11.3835/ZoomInstaller.pkg",
+        "client_alt": (
+            "https://d11yldzmag5yn.cloudfront.net/prod/5.17.11.3835/" "ZoomInstaller.pkg"
+        ),
         "meetings": "https://zoom.us/client/latest/Zoom.pkg",
     }
 
@@ -55,19 +54,13 @@ class ZoomInstaller:
         download_path = os.path.join(self.temp_dir, filename)
 
         # Check if we already have a recent download
-        if (
-            not force_redownload
-            and self.download_path
-            and os.path.exists(self.download_path)
-        ):
+        if not force_redownload and self.download_path and os.path.exists(self.download_path):
             file_age = time.time() - os.path.getmtime(self.download_path)
             if file_age < 3600:  # Less than 1 hour old
                 self.logger.info(f"Using existing download: {self.download_path}")
                 return self.download_path
 
-        self.logger.info(
-            f"Downloading Zoom {zoom_info['version']} from {zoom_info['url']}"
-        )
+        self.logger.info(f"Downloading Zoom {zoom_info['version']} from {zoom_info['url']}")
 
         try:
             # Create request with headers
@@ -79,9 +72,7 @@ class ZoomInstaller:
             )
 
             # Download with progress tracking
-            with urllib.request.urlopen(
-                request, context=self.ssl_context, timeout=30
-            ) as response:
+            with urllib.request.urlopen(request, context=self.ssl_context, timeout=30) as response:
                 total_size = int(response.headers.get("Content-Length", 0))
                 downloaded = 0
 
@@ -93,9 +84,7 @@ class ZoomInstaller:
                         f.write(chunk)
                         downloaded += len(chunk)
 
-                        if (
-                            total_size > 0 and downloaded % (1024 * 1024) == 0
-                        ):  # Log every MB
+                        if total_size > 0 and downloaded % (1024 * 1024) == 0:  # Log every MB
                             progress = (downloaded / total_size) * 100
                             self.logger.info(f"Download progress: {progress:.1f}%")
 

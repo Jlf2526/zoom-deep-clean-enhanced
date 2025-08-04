@@ -96,9 +96,7 @@ class ComprehensiveZoomCLI:
         self.logger.info("-" * 40)
 
         try:
-            cleaner = ZoomDeepCleanerEnhanced(
-                verbose=args.verbose, dry_run=args.dry_run
-            )
+            cleaner = ZoomDeepCleanerEnhanced(verbose=args.verbose, dry_run=args.dry_run)
 
             success = cleaner.run_deep_clean()
             self.results["phase1_standard_clean"] = {
@@ -133,9 +131,7 @@ class ComprehensiveZoomCLI:
             # Log results
             total_cleaned = sum(results.values())
             if total_cleaned > 0:
-                self.logger.info(
-                    f"✅ Phase 2 completed - {total_cleaned} deep artifacts cleaned"
-                )
+                self.logger.info(f"✅ Phase 2 completed - {total_cleaned} deep artifacts cleaned")
                 for category, count in results.items():
                     if count > 0:
                         self.logger.info(f"  {category}: {count}")
@@ -256,18 +252,12 @@ class ComprehensiveZoomCLI:
         self.logger.info("📊 COMPREHENSIVE CLEAN SUMMARY")
         self.logger.info("=" * 60)
 
-        self.logger.info(
-            f"⏱️  Total Duration: {report['total_duration_seconds']:.1f} seconds"
-        )
+        self.logger.info(f"⏱️  Total Duration: {report['total_duration_seconds']:.1f} seconds")
         self.logger.info(
             f"✅ Phases Successful: {summary['phases_successful']}/{summary['phases_completed']}"
         )
-        self.logger.info(
-            f"🧹 Total Artifacts Cleaned: {summary['total_artifacts_cleaned']}"
-        )
-        self.logger.info(
-            f"🔧 Critical Issues Fixed: {summary['critical_issues_fixed']}"
-        )
+        self.logger.info(f"🧹 Total Artifacts Cleaned: {summary['total_artifacts_cleaned']}")
+        self.logger.info(f"🔧 Critical Issues Fixed: {summary['critical_issues_fixed']}")
 
         # Recommendations
         self.logger.info("\n💡 RECOMMENDATIONS:")
@@ -321,9 +311,7 @@ Examples:
         action="store_true",
         help="Preview what would be cleaned without making changes",
     )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose output"
-    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Enable verbose output")
 
     # Advanced options
     parser.add_argument(

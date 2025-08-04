@@ -160,13 +160,9 @@ class CleanupWorker(QObject):
                 "_enable_performance_monitoring", True
             )
 
-            self.log_message.emit(
-                f"DEBUG: Cleaner config after processing: {self.cleaner_config}"
-            )
+            self.log_message.emit(f"DEBUG: Cleaner config after processing: {self.cleaner_config}")
             self.log_message.emit(f"DEBUG: Force cleanup: {force_cleanup}")
-            self.log_message.emit(
-                f"DEBUG: Performance monitoring: {enable_performance_monitoring}"
-            )
+            self.log_message.emit(f"DEBUG: Performance monitoring: {enable_performance_monitoring}")
 
             # Initialize cleaner with valid config
             self.progress_updated.emit(5, "Creating cleaner instance...")
@@ -343,9 +339,7 @@ class ModernZoomCleanerGUI(QMainWindow):
 
         self.dry_run_cb = QCheckBox("Dry Run (Preview Only)")
         self.dry_run_cb.setChecked(True)
-        self.dry_run_cb.setToolTip(
-            "Preview what will be cleaned without making changes"
-        )
+        self.dry_run_cb.setToolTip("Preview what will be cleaned without making changes")
 
         self.verbose_cb = QCheckBox("Verbose Output")
         self.verbose_cb.setChecked(True)
@@ -372,9 +366,7 @@ class ModernZoomCleanerGUI(QMainWindow):
         group_layout = QVBoxLayout(group)
 
         self.advanced_features_cb = QCheckBox("Enable Advanced Features")
-        self.advanced_features_cb.setToolTip(
-            "Enable MAC spoofing and fingerprint modification"
-        )
+        self.advanced_features_cb.setToolTip("Enable MAC spoofing and fingerprint modification")
 
         self.spoof_mac_cb = QCheckBox("Spoof MAC Address")
         self.spoof_mac_cb.setEnabled(False)
@@ -944,9 +936,7 @@ class ModernZoomCleanerGUI(QMainWindow):
                     json.dump(config, f, indent=2)
                 self.append_log(f"Configuration saved to {filename}")
             except Exception as e:
-                QMessageBox.critical(
-                    self, "Error", f"Failed to save configuration: {e}"
-                )
+                QMessageBox.critical(self, "Error", f"Failed to save configuration: {e}")
 
     def load_configuration(self):
         """Load configuration from file"""
@@ -964,9 +954,7 @@ class ModernZoomCleanerGUI(QMainWindow):
                 self.verbose_cb.setChecked(config.get("verbose", True))
                 self.backup_cb.setChecked(config.get("enable_backup", True))
                 self.force_cb.setChecked(config.get("force", False))
-                self.advanced_features_cb.setChecked(
-                    config.get("enable_advanced_features", False)
-                )
+                self.advanced_features_cb.setChecked(config.get("enable_advanced_features", False))
                 self.vm_aware_cb.setChecked(config.get("vm_aware", True))
                 self.system_reboot_cb.setChecked(config.get("system_reboot", False))
                 self.performance_monitoring_cb.setChecked(
@@ -975,9 +963,7 @@ class ModernZoomCleanerGUI(QMainWindow):
 
                 self.append_log(f"Configuration loaded from {filename}")
             except Exception as e:
-                QMessageBox.critical(
-                    self, "Error", f"Failed to load configuration: {e}"
-                )
+                QMessageBox.critical(self, "Error", f"Failed to load configuration: {e}")
 
     def export_log(self):
         """Export log to file"""
