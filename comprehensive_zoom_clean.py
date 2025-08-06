@@ -41,6 +41,9 @@ EXAMPLES:
   # Deep clean with system restart
   python3 comprehensive_zoom_clean.py --force --system-reboot
   
+  # Fix Error 1132 specifically
+  python3 comprehensive_zoom_clean.py --force --fix-error-1132
+  
   # Preview what would be cleaned
   python3 comprehensive_zoom_clean.py --dry-run --verbose
   
@@ -54,6 +57,7 @@ WHAT THIS FIXES:
   ✅ Stale system temp files and caches
   ✅ Corrupted keychain entries
   ✅ Network configuration issues
+  ✅ Zoom Error 1132 (network/firewall connection problems)
         """,
     )
 
@@ -84,6 +88,11 @@ WHAT THIS FIXES:
         help="Automatically restart system after cleaning",
     )
     parser.add_argument(
+        "--fix-error-1132",
+        action="store_true",
+        help="Apply specific fixes for Zoom Error 1132 (network/firewall issues)",
+    )
+    parser.add_argument(
         "--continue-on-error",
         action="store_true",
         help="Continue with next phase even if current phase fails",
@@ -111,6 +120,8 @@ WHAT THIS FIXES:
             print("   - Download and install fresh Zoom")
         if args.system_reboot:
             print("   - Restart your system")
+        if args.fix_error_1132:
+            print("   - Apply specific fixes for Error 1132")
         print()
 
         response = input("Continue? (y/N): ").strip().lower()

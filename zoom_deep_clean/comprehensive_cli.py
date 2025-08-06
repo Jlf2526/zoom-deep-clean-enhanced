@@ -16,6 +16,7 @@ from typing import Dict, Optional
 # Import our modules
 from .cleaner_enhanced import ZoomDeepCleanerEnhanced
 from .deep_system_cleaner import DeepSystemCleaner
+from .error_1132_handler import Error1132Handler
 from .zoom_installer_builtin import ZoomInstaller, download_and_install_zoom
 
 
@@ -67,6 +68,13 @@ class ComprehensiveZoomCLI:
                 success = False
                 if not args.continue_on_error:
                     return False
+
+            # Phase 2.5: Error 1132 Specific Handling (if requested)
+            if args.fix_error_1132 and not args.dry_run:
+                if not self._phase2_5_error_1132_fix(args):
+                    success = False
+                    if not args.continue_on_error:
+                        return False
 
             # Phase 3: System Restart (if requested)
             if args.system_reboot and not args.dry_run:
@@ -147,6 +155,43 @@ class ComprehensiveZoomCLI:
         except Exception as e:
             self.logger.error(f"❌ Phase 2 failed: {e}")
             self.results["phase2_deep_system"] = {"error": str(e)}
+            return False
+
+    def _phase2_5_error_1132_fix(self, args) -> bool:
+        """Phase 2.5: Error 1132 specific handling"""
+        self.logger.info("\n🔧 Phase 2.5: Error 1132 Specific Fix")
+        self.logger.info("-" * 40)
+
+        try:
+            error_1132_handler = Error1132Handler(self.logger, args.dry_run)
+            
+            # Run diagnostic first
+            self.logger.info("🔍 Diagnosing Error 1132...")
+            diagnostic_results = error_1132_handler.diagnose_error_1132()
+            
+            # Generate and log diagnostic report
+            diagnostic_report = error_1132_handler.generate_error_1132_report(diagnostic_results)
+            self.logger.info(f"📋 Error 1132 Diagnostic Report:\n{diagnostic_report}")
+            
+            # Apply fixes
+            self.logger.info("🔧 Applying Error 1132 fixes...")
+            fix_success = error_1132_handler.fix_error_1132()
+            
+            self.results["phase2_5_error_1132"] = {
+                "diagnostic_results": diagnostic_results,
+                "fix_success": fix_success
+            }
+
+            if fix_success:
+                self.logger.info("✅ Phase 2.5 completed - Error 1132 fixes applied")
+            else:
+                self.logger.warning("⚠️  Phase 2.5 completed with issues - Some Error 1132 fixes failed")
+
+            return True
+
+        except Exception as e:
+            self.logger.error(f"❌ Phase 2.5 failed: {e}")
+            self.results["phase2_5_error_1132"] = {"error": str(e)}
             return False
 
     def _phase3_system_restart(self, args):
@@ -335,6 +380,11 @@ Examples:
         "--system-reboot",
         action="store_true",
         help="Automatically restart system after cleaning",
+    )
+    parser.add_argument(
+        "--fix-error-1132",
+        action="store_true",
+        help="Apply specific fixes for Zoom Error 1132 (network/firewall issues)",
     )
     parser.add_argument(
         "--continue-on-error",
