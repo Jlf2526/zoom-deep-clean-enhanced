@@ -7,7 +7,7 @@
 
 Complete Zoom removal tool for macOS with VM awareness and device fingerprint elimination.
 
-**Version: 2.2.0**
+**Version: 2.3.0**
 
 ## 🚀 Quick Start
 

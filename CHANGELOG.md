@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2025-08-06
+
+### Added
+- Comprehensive Error 1132 handling for Zoom connection issues
+- Phone number lookup tool for security purposes (moved to separate repository)
+- Advanced CLI argument parsing and validation
+- Enhanced performance monitoring and benchmarking tools
+- PySide6 GUI implementation with modern interface
+- Cross-platform compatibility enhancements
+
+### Features
+- New Error1132Handler module with full diagnostic and fix capabilities
+- Integrated Error 1132 handling into the comprehensive CLI tool
+- Standalone fix script for Error 1132 diagnostics
+- Unit tests for the new Error 1132 handler
+- Updated main script with --fix-error-1132 flag
+- Enhanced documentation and examples
+- PySide6-based GUI with modern Material Design interface
+- Performance benchmarking scripts
+- Cross-platform support for Linux and Windows
+
+### Fixed
+- Workflow and lint issues that caused CI/CD failures
+- CLI argument parsing inconsistencies
+- Black formatting compliance across all files
+- Missing module files that were incorrectly renamed
+- Python linting issues for CI/CD pipeline
+
+### Changed
+- Repository cleanup and preparation for new release
+- Phone lookup functionality moved to separate repository
+- Enhanced documentation structure and content
+- Improved error handling and user feedback
+- Updated requirements and dependencies
+
 ## [2.2.1] - 2025-08-03
 
 ### Added
