@@ -14,8 +14,8 @@ from pathlib import Path
 from zoom_deep_clean.cleaner_enhanced import ZoomDeepCleanerEnhanced
 from zoom_deep_clean.cross_platform_support import PlatformDetector
 
+pytestmark = pytest.mark.skipif(sys.platform != "darwin", reason="macOS only")
 
-@pytest.mark.skipif(sys.platform != "darwin", reason="macOS only")
 class TestMacOSVersionDetection:
     """Test macOS version detection and handling"""
 
@@ -24,7 +24,7 @@ class TestMacOSVersionDetection:
         if platform.system() == "Darwin":
             version = platform.mac_ver()[0]
             assert version is not None
-            assert len(version.split(".")) >= 2
+            assert len(version.split('.')) >= 2
             print(f"Detected macOS version: {version}")
         else:
             pytest.skip("Not running on macOS")
@@ -120,7 +120,7 @@ class TestFileSystemCompatibility:
             path = Path(path_str)
             if path.exists():
                 readable = os.access(path, os.R_OK)
-                print(f"{'[OK]' if readable else '[FAIL]'} {path_str} readable: {readable}")
+                print(f"{ '[OK]' if readable else '[FAIL]' } {path_str} readable: {readable}")
 
     def test_temp_directory_operations(self):
         """Test temporary directory operations"""
