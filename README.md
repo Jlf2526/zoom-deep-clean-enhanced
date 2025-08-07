@@ -13,7 +13,7 @@ Complete Zoom removal tool for macOS with VM awareness and device fingerprint el
 
 ```bash
 # Install
-pip install zoom-deep-clean-enhanced
+pip3 install zoom-deep-clean-enhanced
 
 # Preview cleanup (safe)
 zoom-deep-clean-enhanced --dry-run --verbose
@@ -48,12 +48,12 @@ zoom-deep-clean-enhanced --force
 
 ```bash
 # From PyPI
-pip install zoom-deep-clean-enhanced
+pip3 install zoom-deep-clean-enhanced
 
 # From source
 git clone https://github.com/PHLthy215/zoom-deep-clean-enhanced.git
 cd zoom-deep-clean-enhanced
-pip install -e .
+pip3 install -e .
 ```
 
 ## 🖥️ Usage
