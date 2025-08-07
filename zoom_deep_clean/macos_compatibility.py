@@ -54,15 +54,15 @@ class MacOSCompatibilityManager:
                 return None
 
             # Parse version string (e.g., "14.2.1" -> major=14, minor=2, patch=1)
-        # Use regex to handle non-numeric characters
-        clean_string = "".join(filter(str.isdigit, version_string.split('.')[0]))
-        if not clean_string:
-            raise ValueError("Could not parse major version number")
-        major = int(clean_string)
-        
-        version_parts = version_string.split(".")
-        minor = int("".join(filter(str.isdigit, version_parts[1]))) if len(version_parts) > 1 else 0
-        patch = int("".join(filter(str.isdigit, version_parts[2]))) if len(version_parts) > 2 else 0
+            # Use regex to handle non-numeric characters
+            clean_string = "".join(filter(str.isdigit, version_string.split('.')[0]))
+            if not clean_string:
+                raise ValueError("Could not parse major version number")
+            major = int(clean_string)
+            
+            version_parts = version_string.split(".")
+            minor = int("".join(filter(str.isdigit, version_parts[1]))) if len(version_parts) > 1 else 0
+            patch = int("".join(filter(str.isdigit, version_parts[2]))) if len(version_parts) > 2 else 0
 
             # Get version info
             version_data = self.MACOS_VERSIONS.get(
