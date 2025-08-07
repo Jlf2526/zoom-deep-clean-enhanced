@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: read
+  contents: write  # For creating GitHub releases
   id-token: write  # For PyPI trusted publishing
 
 jobs:
@@ -35,6 +35,10 @@ jobs:
       run: |
         python -m pytest tests/ -v
     
+    - name: Lint code
+      run: |
+        python -m flake8 zoom_deep_clean/ --max-line-length=88 --ignore=E203,W503
+    
     - name: Build package
       run: |
         python -m build
@@ -50,13 +54,49 @@ jobs:
     needs: build_and_test
     permissions:
       contents: write
+      id-token: write
     
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
     - name: Download package artifact
       uses: actions/download-artifact@v4
       with:
         name: dist
         path: dist/
+    
+    - name: Extract version from tag
+      id: extract_version
+      run: |
+        echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.extract_version.outputs.tag }}
+        release_name: Release ${{ steps.extract_version.outputs.tag }}
+        draft: false
+        prerelease: false
+        body: |
+          ## Release ${{ steps.extract_version.outputs.tag }}
+          
+          ### Features & Improvements
+          - Enhanced security validation
+          - Comprehensive test coverage
+          - Cross-platform compatibility improvements
+          - Performance monitoring enhancements
+          
+          ### Installation
+          ```bash
+          pip install zoom-deep-clean-enhanced==${{ steps.extract_version.outputs.version }}
+          ```
+          
+          ### Changelog
+          See commit history for detailed changes.
         
     - name: Publish package to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
