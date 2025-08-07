@@ -93,6 +93,7 @@ setup(
         "system-administration",
         "security",
         "fingerprint-removal",
+        "pypi-ready",
     ],
     project_urls={
         "Bug Reports": "https://github.com/PHLthy215/zoom-deep-clean-enhanced/issues",
