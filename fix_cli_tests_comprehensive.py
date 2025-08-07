@@ -5,9 +5,10 @@ Comprehensive fix for CLI tests to handle mutually exclusive arguments properly
 
 import re
 
+
 def fix_cli_tests():
     """Fix CLI tests to handle mutually exclusive arguments correctly"""
-    
+
     test_content = '''import pytest
 from unittest.mock import patch, MagicMock
 import sys
@@ -438,13 +439,14 @@ class TestCLIIntegration:
     # Write the fixed test content
     with open("tests/test_cli_enhanced.py", "w") as f:
         f.write(test_content)
-    
+
     print("✅ CLI tests comprehensively fixed!")
     print("Key fixes:")
     print("- Removed mutually exclusive argument combinations")
     print("- Fixed test expectations for argument validation")
     print("- Added proper error code assertions")
     print("- Ensured all tests use compatible argument combinations")
+
 
 if __name__ == "__main__":
     fix_cli_tests()

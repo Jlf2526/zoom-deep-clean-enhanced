@@ -12,6 +12,13 @@ import tempfile
 # Add the package to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
+# Import the cleaner class
+try:
+    from zoom_deep_clean.cleaner_enhanced import ZoomDeepCleanerEnhanced
+except ImportError:
+    print("❌ Could not import ZoomDeepCleanerEnhanced")
+    ZoomDeepCleanerEnhanced = None
+
 
 def test_imports():
     """Test that all required imports work"""

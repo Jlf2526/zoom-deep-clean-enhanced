@@ -7,11 +7,11 @@ which typically indicates network or firewall issues preventing connection to Zo
 
 Usage:
     python3 fix_error_1132_standalone.py [--dry-run] [--verbose]
-    
+
 Examples:
     # Diagnose and fix Error 1132
     python3 fix_error_1132_standalone.py
-    
+
     # Preview what would be done without making changes
     python3 fix_error_1132_standalone.py --dry-run --verbose
 """
@@ -30,10 +30,7 @@ from zoom_deep_clean.error_1132_handler import Error1132Handler
 def setup_logging(verbose: bool = False):
     """Setup logging for the application"""
     level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format='%(asctime)s - %(levelname)s - %(message)s'
-    )
+    logging.basicConfig(level=level, format="%(asctime)s - %(levelname)s - %(message)s")
     return logging.getLogger("error_1132_fixer")
 
 
@@ -101,24 +98,24 @@ EXAMPLES:
     try:
         # Create Error 1132 handler
         handler = Error1132Handler(logger, args.dry_run)
-        
+
         # Run diagnostic
         print("🔍 Running Error 1132 Diagnostic...")
         diagnostic_results = handler.diagnose_error_1132()
-        
+
         # Generate and print report
         print("\n" + "=" * 50)
         print("📋 ERROR 1132 DIAGNOSTIC REPORT")
         print("=" * 50)
         report = handler.generate_error_1132_report(diagnostic_results)
         print(report)
-        
+
         # Apply fixes if not in dry-run mode
         if not args.dry_run:
             print("\n" + "=" * 50)
             print("🔧 APPLYING ERROR 1132 FIXES")
             print("=" * 50)
-            
+
             if handler.fix_error_1132():
                 print("✅ Error 1132 fixes applied successfully")
                 print("\n💡 NEXT STEPS:")

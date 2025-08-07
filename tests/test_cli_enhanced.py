@@ -183,7 +183,9 @@ class TestCLIBasicFunctionality:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--log-file", "/tmp/test.log"]):
+        with patch(
+            "sys.argv", ["cli_enhanced.py", "--dry-run", "--log-file", "/tmp/test.log"]
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
@@ -200,7 +202,9 @@ class TestCLIBasicFunctionality:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--enable-advanced-features"]):
+        with patch(
+            "sys.argv", ["cli_enhanced.py", "--dry-run", "--enable-advanced-features"]
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
@@ -217,7 +221,9 @@ class TestCLIBasicFunctionality:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--disable-advanced-features"]):
+        with patch(
+            "sys.argv", ["cli_enhanced.py", "--dry-run", "--disable-advanced-features"]
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
@@ -234,7 +240,9 @@ class TestCLIBasicFunctionality:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--enable-mac-spoofing"]):
+        with patch(
+            "sys.argv", ["cli_enhanced.py", "--dry-run", "--enable-mac-spoofing"]
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
@@ -268,7 +276,16 @@ class TestCLIBasicFunctionality:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--reset-hostname", "--new-hostname", "test-host"]):
+        with patch(
+            "sys.argv",
+            [
+                "cli_enhanced.py",
+                "--dry-run",
+                "--reset-hostname",
+                "--new-hostname",
+                "test-host",
+            ],
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
@@ -285,7 +302,10 @@ class TestCLIBasicFunctionality:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--verbose", "--no-backup", "--no-vm"]):
+        with patch(
+            "sys.argv",
+            ["cli_enhanced.py", "--dry-run", "--verbose", "--no-backup", "--no-vm"],
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
@@ -312,7 +332,9 @@ class TestCLIErrorHandling:
 
     def test_hostname_without_reset_flag(self):
         """Test --new-hostname without --reset-hostname"""
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--new-hostname", "test"]):
+        with patch(
+            "sys.argv", ["cli_enhanced.py", "--dry-run", "--new-hostname", "test"]
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             # parser.error() exits with code 2
@@ -372,6 +394,7 @@ class TestCLIErrorHandling:
     def test_security_error(self, mock_cleaner_class):
         """Test security error handling"""
         from zoom_deep_clean.cleaner_enhanced import SecurityError
+
         mock_cleaner_class.side_effect = SecurityError("Test security error")
 
         with patch("sys.argv", ["cli_enhanced.py", "--dry-run"]):
@@ -412,12 +435,17 @@ class TestCLIIntegration:
         mock_cleaner.export_dry_run_operations.return_value = "/tmp/export.json"
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--dry-run", "--export-dry-run", "/tmp/export.json"]):
+        with patch(
+            "sys.argv",
+            ["cli_enhanced.py", "--dry-run", "--export-dry-run", "/tmp/export.json"],
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0
 
-        mock_cleaner.export_dry_run_operations.assert_called_once_with("/tmp/export.json")
+        mock_cleaner.export_dry_run_operations.assert_called_once_with(
+            "/tmp/export.json"
+        )
 
     @patch("zoom_deep_clean.cli_enhanced.ZoomDeepCleanerEnhanced")
     def test_export_dry_run_without_dry_run_mode(self, mock_cleaner_class):
@@ -427,7 +455,10 @@ class TestCLIIntegration:
         mock_cleaner.was_cancelled_by_user.return_value = False
         mock_cleaner_class.return_value = mock_cleaner
 
-        with patch("sys.argv", ["cli_enhanced.py", "--force", "--export-dry-run", "/tmp/export.json"]):
+        with patch(
+            "sys.argv",
+            ["cli_enhanced.py", "--force", "--export-dry-run", "/tmp/export.json"],
+        ):
             with pytest.raises(SystemExit) as exc_info:
                 main()
             assert exc_info.value.code == 0

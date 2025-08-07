@@ -164,28 +164,32 @@ class ComprehensiveZoomCLI:
 
         try:
             error_1132_handler = Error1132Handler(self.logger, args.dry_run)
-            
+
             # Run diagnostic first
             self.logger.info("🔍 Diagnosing Error 1132...")
             diagnostic_results = error_1132_handler.diagnose_error_1132()
-            
+
             # Generate and log diagnostic report
-            diagnostic_report = error_1132_handler.generate_error_1132_report(diagnostic_results)
+            diagnostic_report = error_1132_handler.generate_error_1132_report(
+                diagnostic_results
+            )
             self.logger.info(f"📋 Error 1132 Diagnostic Report:\n{diagnostic_report}")
-            
+
             # Apply fixes
             self.logger.info("🔧 Applying Error 1132 fixes...")
             fix_success = error_1132_handler.fix_error_1132()
-            
+
             self.results["phase2_5_error_1132"] = {
                 "diagnostic_results": diagnostic_results,
-                "fix_success": fix_success
+                "fix_success": fix_success,
             }
 
             if fix_success:
                 self.logger.info("✅ Phase 2.5 completed - Error 1132 fixes applied")
             else:
-                self.logger.warning("⚠️  Phase 2.5 completed with issues - Some Error 1132 fixes failed")
+                self.logger.warning(
+                    "⚠️  Phase 2.5 completed with issues - Some Error 1132 fixes failed"
+                )
 
             return True
 
