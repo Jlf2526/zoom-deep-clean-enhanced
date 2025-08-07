@@ -9,6 +9,9 @@ on:
     # Run daily at 2 AM UTC to track performance trends
     - cron: '0 2 * * *'
 
+permissions:
+  contents: read
+
 env:
   # Performance thresholds (in seconds)
   MAX_TEST_TIME: 60
@@ -18,6 +21,8 @@ env:
 
 jobs:
   performance-baseline:
+    permissions:
+      contents: read
     runs-on: macos-latest
     
     strategy:

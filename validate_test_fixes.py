@@ -40,9 +40,10 @@ def test_cleaner_initialization():
     print("🧪 Testing cleaner initialization...")
 
     try:
-        temp_log = tempfile.mktemp()
+        with tempfile.NamedTemporaryFile(delete=False) as temp_log:
+            temp_log_path = temp_log.name
         cleaner = ZoomDeepCleanerEnhanced(
-            log_file=temp_log,
+            log_file=temp_log_path,
             dry_run=True,
             verbose=True,
             enable_backup=True,
@@ -62,8 +63,9 @@ def test_method_existence():
     print("🧪 Testing method existence...")
 
     try:
-        temp_log = tempfile.mktemp()
-        cleaner = ZoomDeepCleanerEnhanced(log_file=temp_log, dry_run=True)
+        with tempfile.NamedTemporaryFile(delete=False) as temp_log:
+            temp_log_path = temp_log.name
+        cleaner = ZoomDeepCleanerEnhanced(log_file=temp_log_path, dry_run=True)
 
         # Test _run_command exists (not _execute_command)
         if not hasattr(cleaner, "_run_command"):
