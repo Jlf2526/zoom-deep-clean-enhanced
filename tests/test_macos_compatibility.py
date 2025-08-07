@@ -1,3 +1,7 @@
+import pytest
+import sys
+
+@pytest.mark.skipif(sys.platform != "darwin", reason="macOS only")
 """
 macOS Compatibility Tests
 Test compatibility across different macOS versions and system configurations
@@ -23,7 +27,7 @@ class TestMacOSVersionDetection:
         if platform.system() == "Darwin":
             version = platform.mac_ver()[0]
             assert version is not None
-            assert len(version.split(".")) >= 2
+            assert len(version.split('.')) >= 2
             print(f"Detected macOS version: {version}")
         else:
             pytest.skip("Not running on macOS")
@@ -119,7 +123,7 @@ class TestFileSystemCompatibility:
             path = Path(path_str)
             if path.exists():
                 readable = os.access(path, os.R_OK)
-                print(f"{'✅' if readable else '❌'} {path_str} readable: {readable}")
+                print(f"{ '✅' if readable else '❌'} {path_str} readable: {readable}")
 
     def test_temp_directory_operations(self):
         """Test temporary directory operations"""
