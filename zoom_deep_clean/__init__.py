@@ -8,7 +8,7 @@ This package provides comprehensive Zoom removal capabilities including:
 - Automated fresh Zoom installation
 - System-wide cleanup with device fingerprint elimination
 
-Version: 2.4.1
+Version: 2.4.2
 """
 
 from .cleaner_enhanced import ZoomDeepCleanerEnhanced, SecurityError
@@ -16,7 +16,7 @@ from .deep_system_cleaner import DeepSystemCleaner
 from .zoom_installer_builtin import ZoomInstaller, download_and_install_zoom
 from .comprehensive_cli import ComprehensiveZoomCLI
 
-__version__ = "2.4.1"
+__version__ = "2.4.2"
 __author__ = "PHLthy215"
 __email__ = "PHLthy215@example.com"
 __description__ = (

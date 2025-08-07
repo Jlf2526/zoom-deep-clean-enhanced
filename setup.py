@@ -4,7 +4,7 @@ Setup script for Zoom Deep Clean Enhanced
 VM-Aware & System-Wide cleanup utility
 
 Created by: PHLthy215
-Enhanced Version: 2.4.1
+Enhanced Version: 2.4.2
 """
 
 from setuptools import setup, find_packages
@@ -33,7 +33,7 @@ def read_requirements():
 
 setup(
     name="zoom-deep-clean-enhanced",
-    version="2.4.1",
+    version="2.4.2",
     author="PHLthy215",
     author_email="PHLthy215@example.com",
     description="Enhanced VM-Aware & System-Wide Zoom cleanup utility for macOS",
