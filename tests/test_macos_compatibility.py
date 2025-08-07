@@ -84,7 +84,7 @@ class TestFileSystemCompatibility:
             dir_path = home_path / dir_name
             if dir_path.exists():
                 assert dir_path.is_dir()
-                print(f"✅ {dir_name} directory accessible")
+                print(f"[OK] {dir_name} directory accessible")
 
     def test_library_directory_access(self):
         """Test access to Library directories"""
@@ -104,7 +104,7 @@ class TestFileSystemCompatibility:
                 dir_path = home_lib / dir_name
                 if dir_path.exists():
                     assert dir_path.is_dir()
-                    print(f"✅ Library/{dir_name} accessible")
+                    print(f"[OK] Library/{dir_name} accessible")
 
     def test_system_directory_permissions(self):
         """Test permissions for system directories"""
@@ -120,7 +120,7 @@ class TestFileSystemCompatibility:
             path = Path(path_str)
             if path.exists():
                 readable = os.access(path, os.R_OK)
-                print(f"{'✅' if readable else '❌'} {path_str} readable: {readable}")
+                print(f"{'[OK]' if readable else '[FAIL]'} {path_str} readable: {readable}")
 
     def test_temp_directory_operations(self):
         """Test temporary directory operations"""
@@ -154,13 +154,13 @@ class TestSystemCommandCompatibility:
         for cmd in commands_to_test:
             try:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
-                print(f"✅ Command {' '.join(cmd)}: exit_code={result.returncode}")
+                print(f"[OK] Command {' '.join(cmd)}: exit_code={result.returncode}")
                 if result.returncode != 0:
                     print(f"   stderr: {result.stderr}")
             except subprocess.TimeoutExpired:
-                print(f"❌ Command {' '.join(cmd)}: timeout")
+                print(f"[FAIL] Command {' '.join(cmd)}: timeout")
             except FileNotFoundError:
-                print(f"❌ Command {' '.join(cmd)}: not found")
+                print(f"[FAIL] Command {' '.join(cmd)}: not found")
 
     def test_security_commands(self):
         """Test security-related commands"""
@@ -173,12 +173,12 @@ class TestSystemCommandCompatibility:
             try:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                 print(
-                    f"✅ Security command {' '.join(cmd[:2])}: exit_code={result.returncode}"
+                    f"[OK] Security command {' '.join(cmd[:2])}: exit_code={result.returncode}"
                 )
             except subprocess.TimeoutExpired:
-                print(f"❌ Security command {' '.join(cmd[:2])}: timeout")
+                print(f"[FAIL] Security command {' '.join(cmd[:2])}: timeout")
             except FileNotFoundError:
-                print(f"❌ Security command {' '.join(cmd[:2])}: not found")
+                print(f"[FAIL] Security command {' '.join(cmd[:2])}: not found")
 
     def test_process_commands(self):
         """Test process-related commands"""
@@ -192,12 +192,12 @@ class TestSystemCommandCompatibility:
             try:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
                 print(
-                    f"✅ Process command {' '.join(cmd[:2])}: exit_code={result.returncode}"
+                    f"[OK] Process command {' '.join(cmd[:2])}: exit_code={result.returncode}"
                 )
             except subprocess.TimeoutExpired:
-                print(f"❌ Process command {' '.join(cmd[:2])}: timeout")
+                print(f"[FAIL] Process command {' '.join(cmd[:2])}: timeout")
             except FileNotFoundError:
-                print(f"❌ Process command {' '.join(cmd[:2])}: not found")
+                print(f"[FAIL] Process command {' '.join(cmd[:2])}: not found")
 
 
 class TestCleanerCompatibility:
@@ -223,7 +223,7 @@ class TestCleanerCompatibility:
         if platform.system() == "Darwin":
             # Test that platform-specific paths are set correctly
             assert hasattr(cleaner, "logger")
-            print("✅ Cleaner platform detection working")
+            print("[OK] Cleaner platform detection working")
 
     @patch("zoom_deep_clean.cleaner_enhanced.ZoomDeepCleanerEnhanced._run_command")
     def test_cleaner_dry_run_compatibility(self, mock_run_command):
@@ -235,9 +235,9 @@ class TestCleanerCompatibility:
         # This should work without actually executing system commands
         try:
             result = cleaner.run_deep_clean()
-            print(f"✅ Dry-run compatibility test: {result}")
+            print(f"[OK] Dry-run compatibility test: {result}")
         except Exception as e:
-            print(f"❌ Dry-run compatibility test failed: {e}")
+            print(f"[FAIL] Dry-run compatibility test failed: {e}")
             raise
 
 
@@ -253,7 +253,7 @@ class TestPythonCompatibility:
         assert version_info.minor >= 9
 
         print(
-            f"✅ Python {version_info.major}.{version_info.minor}.{version_info.micro} supported"
+            f"[OK] Python {version_info.major}.{version_info.minor}.{version_info.micro} supported"
         )
 
     def test_required_modules_import(self):
@@ -276,9 +276,9 @@ class TestPythonCompatibility:
         for module_name in required_modules:
             try:
                 __import__(module_name)
-                print(f"✅ Module {module_name} imported successfully")
+                print(f"[OK] Module {module_name} imported successfully")
             except ImportError as e:
-                print(f"❌ Module {module_name} import failed: {e}")
+                print(f"[FAIL] Module {module_name} import failed: {e}")
                 raise
 
     def test_package_imports(self):
@@ -295,9 +295,9 @@ class TestPythonCompatibility:
         for module_name in package_modules:
             try:
                 __import__(module_name)
-                print(f"✅ Package module {module_name} imported successfully")
+                print(f"[OK] Package module {module_name} imported successfully")
             except ImportError as e:
-                print(f"❌ Package module {module_name} import failed: {e}")
+                print(f"[FAIL] Package module {module_name} import failed: {e}")
                 raise
 
 
@@ -311,11 +311,11 @@ class TestVersionSpecificBehavior:
 
         version = platform.mac_ver()[0]
         if version.startswith("12."):
-            print("✅ Running on macOS Monterey - testing specific compatibility")
+            print("[OK] Running on macOS Monterey - testing specific compatibility")
             # Add Monterey-specific tests here
             self._test_monterey_specific_features()
         else:
-            print(f"ℹ️ Not running on Monterey (version: {version})")
+            print(f"[INFO] Not running on Monterey (version: {version})")
 
     def test_macos_ventura_compatibility(self):
         """Test compatibility with macOS Ventura (13.x)"""
@@ -324,11 +324,11 @@ class TestVersionSpecificBehavior:
 
         version = platform.mac_ver()[0]
         if version.startswith("13."):
-            print("✅ Running on macOS Ventura - testing specific compatibility")
+            print("[OK] Running on macOS Ventura - testing specific compatibility")
             # Add Ventura-specific tests here
             self._test_ventura_specific_features()
         else:
-            print(f"ℹ️ Not running on Ventura (version: {version})")
+            print(f"[INFO] Not running on Ventura (version: {version})")
 
     def test_macos_sonoma_compatibility(self):
         """Test compatibility with macOS Sonoma (14.x)"""
@@ -337,11 +337,11 @@ class TestVersionSpecificBehavior:
 
         version = platform.mac_ver()[0]
         if version.startswith("14."):
-            print("✅ Running on macOS Sonoma - testing specific compatibility")
+            print("[OK] Running on macOS Sonoma - testing specific compatibility")
             # Add Sonoma-specific tests here
             self._test_sonoma_specific_features()
         else:
-            print(f"ℹ️ Not running on Sonoma (version: {version})")
+            print(f"[INFO] Not running on Sonoma (version: {version})")
 
     def test_macos_sequoia_compatibility(self):
         """Test compatibility with macOS Sequoia (15.x)"""
@@ -350,11 +350,11 @@ class TestVersionSpecificBehavior:
 
         version = platform.mac_ver()[0]
         if version.startswith("15."):
-            print("✅ Running on macOS Sequoia - testing specific compatibility")
+            print("[OK] Running on macOS Sequoia - testing specific compatibility")
             # Add Sequoia-specific tests here
             self._test_sequoia_specific_features()
         else:
-            print(f"ℹ️ Not running on Sequoia (version: {version})")
+            print(f"[INFO] Not running on Sequoia (version: {version})")
 
     def _test_monterey_specific_features(self):
         """Test Monterey-specific features and workarounds"""
