@@ -155,7 +155,7 @@ class MacOSCompatibilityManager:
         if feature in self._compatibility_cache:
             return self._compatibility_cache[feature]
 
-        version_info = self.get_macos_version()
+        version_info = self.get_macos_.get_version()
         if not version_info:
             return False
 
